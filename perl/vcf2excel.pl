@@ -2819,8 +2819,6 @@ sub load_existing_snp_list
 
 					chomp $snp_list_line;
 					@item = split(/\s+/,$snp_list_line);
-					print $snp_list_line;
-					exit;
 
 					if ($line_count > 2)
 					{
