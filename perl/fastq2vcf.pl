@@ -316,6 +316,7 @@ my $flagstat_final_out			= "";
 
 #Other files
 my $insert_size_pdf				= ""; # Used by picard CollectInsertSizeMetrics
+my $insert_size_out				= ""; # Used by picard CollectInsertSizeMetrics
 my $WGS_metrics_file			= ""; # Used by picard CollectWgsMetrics
 my $dummy_dbsnp_file			= ""; # The dummy dbSNP file used by....
 my $all_snps_file				= ""; # SNPs file for whole genome
@@ -1904,6 +1905,7 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	
 	#Other files
 	$insert_size_pdf = "$sample_name"."_insert_size.pdf";
+	$insert_size_out = "$sample_name"."_insert_size.out";
 	$WGS_metrics_file = "$sample_name"."_WGS_metrics.out";
 	$validate_final_out = "$run_title"."_"."$sample_name"."_validate_final.out";
 	$flagstat_final_out = "$run_title"."_"."$sample_name"."_flagstat_final.out";
@@ -2503,10 +2505,11 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	##################################################
 	&print_message("File $loop_count/$no_of_files   Step 15: Plotting insert size histogram...","message");
 
-	&run_unix_command("java $memory_string $temp_dir_string -jar $picard_path/CollectInsertSizeMetrics.jar INPUT=$final_bam OUTPUT=out2.junk HISTOGRAM_FILE=$insert_size_pdf VALIDATION_STRINGENCY=LENIENT","Step 15 Plot insert size");
+	&run_unix_command("java $memory_string $temp_dir_string -jar $picard_path/CollectInsertSizeMetrics.jar INPUT=$final_bam OUTPUT=$insert_size_out HISTOGRAM_FILE=$insert_size_pdf VALIDATION_STRINGENCY=LENIENT","Step 15 Plot insert size");
 
 	&record_input_file_size ("$final_bam");
 	&record_output_file_size_no_mail("$insert_size_pdf");
+	&record_output_file_size_no_mail("$insert_size_out");
 
 	&print_message("File $loop_count/$no_of_files   Step 15: Insert size histogram plotted","message");
 
@@ -2531,7 +2534,7 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	##################################################
 	&print_message("Moving various files","message");
 
-	&print_both("------------------------------------------------------------------------------------------------------------------------------------");
+	&print_both("------------------------------------------------------------------------------------------------------------------------------------\n");
 	&print_both("Moving various files\n");
 
 
@@ -2546,6 +2549,7 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	&move_to_results_all_folder ("$runtitle_sample_metrics"); # MarkDuplicates info
 	
 	&move_to_results_all_folder ("$insert_size_pdf");
+	&move_to_results_all_folder ("$insert_size_out");
 	#&move_to_results_all_folder ("$WGS_metrics_file");
 	
 
@@ -2997,6 +3001,7 @@ print   READMEOVERALL   "\t\t$flagstat_final_out\n\n\n";
 print	READMEOVERALL	"PDF FILES\n\n";
 
 print	READMEOVERALL	"\t$insert_size_pdf      \tInsert size histogram\n\n";
+print	READMEOVERALL	"\t$insert_size_out      \tInsert size metrics file\n\n";
 
 print	READMEOVERALL	"\t$WGS_metrics_file     \tWGS metrics file\n\n\n";
 
