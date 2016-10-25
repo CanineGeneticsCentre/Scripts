@@ -891,10 +891,14 @@ while ($vcf_line = <VCF>)
 				#####################################################################
 				# Record whether SNP is on the SNP list                             #
 				#####################################################################
-				if ($on_snp_list eq "true")
-				{ print OUT "\tY"; }
-				else
+			#	if ($on_snp_list eq "true")
+			#	{ print OUT "\tY"; }
+			#	else
+			#	{ print OUT "\tN"; }
+				if ($on_snp_list eq "false")
 				{ print OUT "\tN"; }
+				else
+				{ print OUT "\t$on_snp_list"; }
 
 
 				#####################################################################
@@ -2811,9 +2815,12 @@ sub load_existing_snp_list
 			while ($snp_list_line = <SNP_LIST>) 
 			{
 					$line_count = $line_count + 1;
+					next if $snp_list_line =~ /^#/;
 
 					chomp $snp_list_line;
 					@item = split(/\s+/,$snp_list_line);
+					print $snp_list_line;
+					exit;
 
 					if ($line_count > 2)
 					{
@@ -6168,7 +6175,8 @@ sub read_vcf_first_seven_columns
 
     if (defined $snp_list_hash{$chr_pos})
 	{
-		$on_snp_list = "true";
+		#$on_snp_list = "true";
+		$on_snp_list = $snp_list_hash{$chr_pos};
 	}
 	else
 	{
