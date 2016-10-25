@@ -6169,12 +6169,16 @@ sub read_vcf_first_seven_columns
 	####################################################################
     # Make joint chromosome and position to check if it is on SNP list #
     ####################################################################
-    $chr_pos = "chr".$chromosome."_".$position;
+    $chr_pos = $chromosome."_".$position;
 
     if (defined $snp_list_hash{$chr_pos})
 	{
 		#$on_snp_list = "true";
 		$on_snp_list = $snp_list_hash{$chr_pos};
+	}
+    elsif (defined $snp_list_hash{"chr".$chr_pos})
+	{
+		$on_snp_list = $snp_list_hash{"chr".$chr_pos};
 	}
 	else
 	{
