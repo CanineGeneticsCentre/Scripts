@@ -23,10 +23,20 @@ use Getopt::Long;
 use File::Basename;
 use Term::ANSIColor;
 use Cwd;
+use Sys::Hostname;
+use POSIX qw(strftime);
 
 # VERSION OF SOFTWARE #
-my $version						= "c71";  # 'a' means Workstation 1, "b" is Workstation 2 and "c" is Workstation 3
+#my $version						= "c71";  # 'a' means Workstation 1, "b" is Workstation 2 and "c" is Workstation 3
 my $warning						= "on";
+
+my %hostnames = (
+	'gen-x1404-ws01'	=> 'ws1',	
+	'GEN-X1404-WS02'	=> 'ws2',
+	'ws3'				=> 'ws3',
+	'workstation3'		=> 'ws3',
+	'NGSBACK3'			=> 'samba64',
+);
 
 ############################################
 # For testing new versions of the software #
@@ -78,10 +88,12 @@ my $no_of_threads_gatk_br_nct	= "2";  # BaseRecalibrator -nct          <== This 
 my $no_of_threads_gatk_rtc_nt	= "2";
 my $workstation 				= "unknown";
 my $e_mail_from 				= ""; # Who e-mails come from
+my $host	 					= hostname();
+my $hostname 					= $hostnames{$host};
 
 # Workstations 1 2 and 3 are denoted by 'a', 'b' and 'c' here (in the version name)
-# Workstation 1
-if ((index($version,"w") > -1) || (index($version,"a") > -1))
+# Workstation 1/Workstation 2
+if ($hostname eq 'ws1' || $hostname eq 'ws2')
 {
 	$memory						= "45"; # memory setting for Java in gigabytes
 	$no_of_threads_bwa			= "8";
@@ -91,10 +103,10 @@ if ((index($version,"w") > -1) || (index($version,"a") > -1))
 	$no_of_threads_gatk_br_nct	= "8";  # BaseRecalibrator -nct          <== This one is used for BaseRecalibrator
 	$no_of_threads_gatk_rtc_nt	= "16"; # RealignerTargetCreator         <== This one is used for RealignerTargetCreator
 	$workstation 				= "true";
-	$e_mail_from 				= 'NGS_analysis@gen-x1404-ws01.aht.org.uk'; # Who e-mails come from
+	$e_mail_from 				= 'NGS_analysis@'.$hostname.'.aht.org.uk'; # Who e-mails come from
 }
 #Workstation 3
-elsif (index($version,"c") > -1)
+elsif  ($hostname eq 'ws3')
 {
 	$memory						= "50"; # memory setting for Java in gigabytes
 	$no_of_threads_bwa			= "24";
@@ -104,9 +116,9 @@ elsif (index($version,"c") > -1)
 	$no_of_threads_gatk_br_nct	= "24";  # BaseRecalibrator -nct          <== This one is used for BaseRecalibrator
 	$no_of_threads_gatk_rtc_nt	= "24"; # RealignerTargetCreator         <== This one is used for RealignerTargetCreator
 	$workstation 				= "true";
-	$e_mail_from 				= 'NGS_analysis@gen-x1404-ws03.aht.org.uk'; # Who e-mails come from
+	$e_mail_from 				= 'NGS_analysis@'.$hostname.'.aht.org.uk'; # Who e-mails come from
 }
-else
+elsif  ($hostname eq 'samba64')
 # Samba64 version (if no 'w' in version name)
 {
 	$memory						= "4"; # memory setting for Java in gigabytes
@@ -117,7 +129,10 @@ else
 	$no_of_threads_gatk_br_nct	= "2";  # BaseRecalibrator -nct          <== This one is used for BaseRecalibrator
 	$no_of_threads_gatk_rtc_nt	= "2"; # RealignerTargetCreator         <== This one is used for RealignerTargetCreator
 	$workstation 				= "false";
-	$e_mail_from 				= 'NGS_analysis@samba64.org.uk'; # Who e-mails come from
+	$e_mail_from 				= 'NGS_analysis@'.$hostname.'.aht.org.uk'; # Who e-mails come from
+}
+else{
+	
 }
 
 #Other constants
@@ -364,10 +379,7 @@ print "\n\n";
 
 print color 'yellow';
 
-if ( index($version,"a") > -1 ){ print "Version $version (for WS1)\n\n"; }
-if ( index($version,"b") > -1 ){ print "Version $version (for WS2)\n\n"; }
-if ( index($version,"c") > -1 ){ print "Version $version (for WS3)\n\n"; }
-if ( index($version,"s") > -1 ){ print "Version $version (for samba64)\n\n"; }
+print "Running for ".$hostname."\n\n";
 
 print "  - This program processes FASTQ files into VCF files.\n\n";
 
@@ -479,15 +491,11 @@ $email_address = <STDIN>;
 chomp $email_address;
 
 # Some short cuts
+if ($email_address eq "e"){$email_address = 'ellen.schofield@aht.org.uk';}
 if ($email_address eq "m"){$email_address = 'mike.boursnell@aht.org.uk';}
-if ($email_address eq "o"){$email_address = 'oliver.forman@aht.org.uk';}
-if ($email_address eq "p"){$email_address = 'arabella.baird@aht.org.uk';}
 if ($email_address eq "s"){$email_address = 'sally.ricketts@aht.org.uk';}
-if ($email_address eq "k"){$email_address = 'karen.steward@aht.org.uk';}
-if ($email_address eq "a"){$email_address = 'amy.charbonneau@aht.org.uk';}
 if ($email_address eq "b"){$email_address = 'rebekkah.hitti@aht.org.uk';}
 if ($email_address eq "g"){$email_address = 'graham.newland@aht.org.uk';}
-#if ($email_address eq "l"){$email_address = 'lara.compston-garnett@aht.org.uk';}
 if ($email_address eq "l"){$email_address = 'louise.pettitt@aht.org.uk';}
 
 #################################################################
@@ -1650,7 +1658,8 @@ $command_times_log = "$run_title"."_fastq2vcf_times_log.out";
 open (COMMAND_LOG, ">$command_log")|| die "Cannot create output file: $command_log";
 open (COMMAND_TIMES_LOG, ">$command_times_log") || die "Cannot create output file: $command_times_log";
 
-print COMMAND_LOG "Command log of perl script fastq2vcf version $version\n\n";
+my $version = strftime "%F", localtime($start_time);
+print COMMAND_LOG "Command log of perl script fastq2vcf (started $version)\n\n";
 
 &print_message("SUMMARY DETAILS - PLEASE CHECK CAREFULLY!!","message");
 print COMMAND_LOG "SUMMARY DETAILS\n\n";
@@ -2124,7 +2133,7 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	print READMEFILE "Summary of fastq2vcf results files for this sample     \n";
 	print READMEFILE "#######################################################\n\n";
 
-	print READMEFILE "Program:\t\t\tfastq2vcf (fastq2bam section)\tVersion: $version\n\n";
+	print READMEFILE "Program:\t\t\tfastq2vcf (fastq2bam section)\tStared: $version\n\n";
 		
 	print READMEFILE "Run title:\t\t\t$run_title\n\n";
 	
@@ -2655,7 +2664,7 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	## Mail Body
 	print MAIL "Run title:     \t$run_title\n\n";
 	print MAIL "Sample name:   \t$sample_name  (sample number $loop_count)\n\n";
-	print MAIL "Script:        \tfastq2vcf PERL script version $version\n\n";
+	print MAIL "Script:        \tfastq2vcf PERL script from GIT started $version\n\n";
 
 	print MAIL "FASTQ files:\t$fastq_file_1\t$fastq_file_2\n";
 	print MAIL "BAM file:   \t$final_bam\n\n";
@@ -3037,7 +3046,7 @@ print MAIL "From: $e_mail_from\n";
 print MAIL "Subject: FASTQ2VCF: Run $run_title has finished\n\n";
 ## Mail Body
 print MAIL "Run title:  $run_title\n\n";
-print MAIL "Script:     fastq2vcf version $version\n\n";
+print MAIL "Script:     fastq2vcf (GIT) started $version\n\n";
 
 print MAIL "Your next generation sequence pipeline is complete\n\n";
 print MAIL "For a list of commands see $command_log\n\n";
@@ -3233,7 +3242,7 @@ sub send_email_err_alert($;$)
 	print MAIL "Subject: FASTQ2VCF: Error detected in run $run_title\n\n";
 
 	## Mail Body
-	print MAIL "Script:    \tfastq2vcf version $version\n";
+	print MAIL "Script:    \tfastq2vcf (GIT) started $version\n";
 	print MAIL "Run title: \t$run_title\n\n";
 	
 	print MAIL "A unix error was detected during script processing (error number $_returnCode)\n\n";
@@ -3323,7 +3332,7 @@ sub record_output_file_size
 				print MAIL "From: $e_mail_from\n";
 				print MAIL "Subject: NGS ANALYSIS fastq2vcf ZERO FILE SIZE: Run $run_title.  Sample $sample_name. File $_outputfile.\n\n";
 				## Mail Body
-				print MAIL "fastq2vcf script version $version\n\n";
+				print MAIL "fastq2vcf script (GIT) started $version\n\n";
 				print MAIL "Run:    \t$run_title\n";
 				print MAIL "Sample: \t$sample_name\n";
 				print MAIL "File:   \t$_outputfile\n\n";
