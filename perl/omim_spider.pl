@@ -117,8 +117,8 @@ print color 'yellow';
 print "Version $version\n\n";
 print "  - Checks OMIM for a list of genes\n\n";
 
-print color 'red';
-print "Type this first:  export http_proxy=\"http://191.9.209.66:8081\"\n";
+#print color 'red';
+#print "Type this first:  export http_proxy=\"http://191.9.209.66:8081\"\n";
 
 
 print color 'reset';
