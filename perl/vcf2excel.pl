@@ -891,6 +891,7 @@ while ($vcf_line = <VCF>)
 				#####################################################################
 				# Record whether SNP is on the SNP list                             #
 				#####################################################################
+				print STDERR $on_snp_list."\n";
 			#	if ($on_snp_list eq "true")
 			#	{ print OUT "\tY"; }
 			#	else
@@ -902,8 +903,7 @@ while ($vcf_line = <VCF>)
 				
 	
 				if ($position == 17490618){
-					print $on_snp_list."\n";
-					die();
+					exit(0);
 				}
 
 
@@ -6190,11 +6190,11 @@ sub read_vcf_first_seven_columns
 		$on_snp_list = "false";
 	}
 	
-	if ($position == 17490618){
-		print $chr_pos."\n";
-		print $snp_list_hash{$chr_pos}."\n";
-		print $on_snp_list."\n";
-	}
+#	if ($position == 17490618){
+#		print $chr_pos."\n";
+#		print $snp_list_hash{$chr_pos}."\n";
+#		print $on_snp_list."\n";
+#	}
 
 } # read_vcf_first_seven_columns
 
