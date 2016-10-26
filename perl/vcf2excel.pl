@@ -2771,7 +2771,7 @@ sub load_existing_snp_list
 			$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
 			$ensembl_names_file = "/home/genetics/canfam3/canfam3_ensembl_gene_names.txt"; 
 			$ref_seq_name = "canfam3";
-			$x_chromosome_number = "chr39"; 
+			$x_chromosome_number = "39"; 
 		}
 
 		if (substr($answer,0,1) eq "2" )
@@ -2779,7 +2779,7 @@ sub load_existing_snp_list
 			$snp_list_file = "/home/genetics/equcab2/equcab2_snps_all.vcf";
 			$ensembl_names_file = "/home/genetics/equcab2/equcab2_ensembl_gene_names.txt"; 
 			$ref_seq_name = "equcab2";
-			$x_chromosome_number = "chr32";
+			$x_chromosome_number = "32";
 		}
 
 		if (substr($answer,0,1) eq "3" )
@@ -2788,7 +2788,7 @@ sub load_existing_snp_list
 			$check_snp_list = "no";
 			$convert_ensembl_names = "no";
 			$ref_seq_name = "felcat5";
-			$x_chromosome_number = "chr19";
+			$x_chromosome_number = "19";
 		}
 
 		if (substr($answer,0,1) eq "4" )
@@ -2797,7 +2797,7 @@ sub load_existing_snp_list
 			$check_snp_list = "no";
 			$convert_ensembl_names = "no";
 			$ref_seq_name = "human";
-			$x_chromosome_number = "chr23";
+			$x_chromosome_number = "23";
 		}
 
 
@@ -6151,21 +6151,20 @@ sub read_vcf_first_seven_columns
 	
 	$vcf_variant_count = $vcf_variant_count + 1;
 
-
-	#################################################################
-	# Convert chrX to relevant number (e.g. chrX --> chr39 for dog) #
-	#################################################################
-	if ($chromosome eq "chrX")
-	{
-		$chromosome = $x_chromosome_number;
-	}
-
     ####################################################################
 	# Remove string 'chr'                                              #
 	####################################################################
     if (substr($chromosome,0,3) eq "chr"){$chromosome = substr($chromosome,3,99)}
-	
 
+
+	#################################################################
+	# Convert chrX to relevant number (e.g. chrX --> chr39 for dog) #
+	#################################################################
+	if ($chromosome eq "X")
+	{
+		$chromosome = $x_chromosome_number;
+	}
+	
 	####################################################################
     # Make joint chromosome and position to check if it is on SNP list #
     ####################################################################
@@ -6183,6 +6182,12 @@ sub read_vcf_first_seven_columns
 	else
 	{
 		$on_snp_list = "false";
+	}
+	
+	if ($position == 17490618){
+		print $chr_pos."\n";
+		print $snp_list_hash{$chr_pos}."\n";
+		print $on_snp_list."\n";
 	}
 
 } # read_vcf_first_seven_columns
