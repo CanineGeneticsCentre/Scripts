@@ -630,6 +630,11 @@ while ($vcf_line = <VCF>)
 		# 7   		$FILTER                                                       #
 		#$#########################################################################
 		&read_vcf_first_seven_columns;
+		
+		next unless $chromosome == 1;
+		next unless $position == 17490618;
+		
+		print $_."\n";
     
 
 		############################################################################################
@@ -891,7 +896,7 @@ while ($vcf_line = <VCF>)
 				#####################################################################
 				# Record whether SNP is on the SNP list                             #
 				#####################################################################
-				print STDERR $on_snp_list."\n";
+				print $on_snp_list."\n";
 			#	if ($on_snp_list eq "true")
 			#	{ print OUT "\tY"; }
 			#	else
@@ -900,11 +905,6 @@ while ($vcf_line = <VCF>)
 				{ print OUT "\tN"; }
 				else
 				{ print OUT "\t$on_snp_list"; }
-				
-	
-				if ($position == 17490618){
-					exit(0);
-				}
 
 
 				#####################################################################
@@ -2319,7 +2319,10 @@ while ($vcf_line = <VCF>)
 
 	} # End of: if (index($vcf_line,"#CHROM") > -1)
 	
-	
+	if ($filter_count_all >= 7){
+		die;
+	}
+
 	if (($line_count % 20000) == 0)
 	{
 		if ($passed_header_lines eq "true")
@@ -2328,7 +2331,7 @@ while ($vcf_line = <VCF>)
 		}
 	}
 	 
-} # End of: while ($vcf_line = <VCF>)  top of loop is at 504
+} # End of: while ($vcf_line = <VCF>)  top of loop is at 587
 
 if ($keep_unfiltered_output eq "true"){close OUT;} # close out file for excel}
 
@@ -2774,7 +2777,8 @@ sub load_existing_snp_list
 
 		if (substr($answer,0,1) eq "1" )
 		{
-			$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
+			#$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
+			$snp_list_file = "/home/genetics/canfam3/chr1snps.vcf";
 			$ensembl_names_file = "/home/genetics/canfam3/canfam3_ensembl_gene_names.txt"; 
 			$ref_seq_name = "canfam3";
 			$x_chromosome_number = "39"; 
