@@ -899,6 +899,12 @@ while ($vcf_line = <VCF>)
 				{ print OUT "\tN"; }
 				else
 				{ print OUT "\t$on_snp_list"; }
+				
+	
+				if ($position == 17490618){
+					print $on_snp_list."\n";
+					die();
+				}
 
 
 				#####################################################################
