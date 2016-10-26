@@ -634,7 +634,7 @@ while ($vcf_line = <VCF>)
 		next unless $chromosome == 1;
 		next unless $position == 17490618;
 		
-		print $_."\n";
+		print $vcf_line."\n";
     
 
 		############################################################################################
@@ -896,11 +896,6 @@ while ($vcf_line = <VCF>)
 				#####################################################################
 				# Record whether SNP is on the SNP list                             #
 				#####################################################################
-				print $on_snp_list."\n";
-			#	if ($on_snp_list eq "true")
-			#	{ print OUT "\tY"; }
-			#	else
-			#	{ print OUT "\tN"; }
 				if ($on_snp_list eq "false")
 				{ print OUT "\tN"; }
 				else
@@ -1301,10 +1296,10 @@ while ($vcf_line = <VCF>)
 				#########################################
 				# Record whether SNP is on the SNP list #
 				#########################################
-				if ($on_snp_list eq "true")
-				{ print OUT_FILTERED "\tY"; }
-				else
+				if ($on_snp_list eq "false")
 				{ print OUT_FILTERED "\tN"; }
+				else
+				{ print OUT_FILTERED "\t$on_snp_list"; }
 
 
 				#####################################################################
@@ -2318,10 +2313,6 @@ while ($vcf_line = <VCF>)
 		
 
 	} # End of: if (index($vcf_line,"#CHROM") > -1)
-	
-	if ($filter_count_all >= 7){
-		die;
-	}
 
 	if (($line_count % 20000) == 0)
 	{
@@ -2777,8 +2768,7 @@ sub load_existing_snp_list
 
 		if (substr($answer,0,1) eq "1" )
 		{
-			#$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
-			$snp_list_file = "/home/genetics/canfam3/chr1snps.vcf";
+			$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
 			$ensembl_names_file = "/home/genetics/canfam3/canfam3_ensembl_gene_names.txt"; 
 			$ref_seq_name = "canfam3";
 			$x_chromosome_number = "39"; 
@@ -6193,12 +6183,6 @@ sub read_vcf_first_seven_columns
 	{
 		$on_snp_list = "false";
 	}
-	
-#	if ($position == 17490618){
-#		print $chr_pos."\n";
-#		print $snp_list_hash{$chr_pos}."\n";
-#		print $on_snp_list."\n";
-#	}
 
 } # read_vcf_first_seven_columns
 
