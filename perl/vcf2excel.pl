@@ -891,10 +891,10 @@ while ($vcf_line = <VCF>)
 				#####################################################################
 				# Record whether SNP is on the SNP list                             #
 				#####################################################################
-				if ($on_snp_list eq "true")
-				{ print OUT "\tY"; }
-				else
+				if ($on_snp_list eq "false")
 				{ print OUT "\tN"; }
+				else
+				{ print OUT "\t$on_snp_list"; }
 
 
 				#####################################################################
@@ -1291,10 +1291,10 @@ while ($vcf_line = <VCF>)
 				#########################################
 				# Record whether SNP is on the SNP list #
 				#########################################
-				if ($on_snp_list eq "true")
-				{ print OUT_FILTERED "\tY"; }
-				else
+				if ($on_snp_list eq "false")
 				{ print OUT_FILTERED "\tN"; }
+				else
+				{ print OUT_FILTERED "\t$on_snp_list"; }
 
 
 				#####################################################################
@@ -2308,8 +2308,7 @@ while ($vcf_line = <VCF>)
 		
 
 	} # End of: if (index($vcf_line,"#CHROM") > -1)
-	
-	
+
 	if (($line_count % 20000) == 0)
 	{
 		if ($passed_header_lines eq "true")
@@ -2318,7 +2317,7 @@ while ($vcf_line = <VCF>)
 		}
 	}
 	 
-} # End of: while ($vcf_line = <VCF>)  top of loop is at 504
+} # End of: while ($vcf_line = <VCF>)  top of loop is at 587
 
 if ($keep_unfiltered_output eq "true"){close OUT;} # close out file for excel}
 
@@ -2767,7 +2766,7 @@ sub load_existing_snp_list
 			$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
 			$ensembl_names_file = "/home/genetics/canfam3/canfam3_ensembl_gene_names.txt"; 
 			$ref_seq_name = "canfam3";
-			$x_chromosome_number = "chr39"; 
+			$x_chromosome_number = "39"; 
 		}
 
 		if (substr($answer,0,1) eq "2" )
@@ -2775,7 +2774,7 @@ sub load_existing_snp_list
 			$snp_list_file = "/home/genetics/equcab2/equcab2_snps_all.vcf";
 			$ensembl_names_file = "/home/genetics/equcab2/equcab2_ensembl_gene_names.txt"; 
 			$ref_seq_name = "equcab2";
-			$x_chromosome_number = "chr32";
+			$x_chromosome_number = "32";
 		}
 
 		if (substr($answer,0,1) eq "3" )
@@ -2784,7 +2783,7 @@ sub load_existing_snp_list
 			$check_snp_list = "no";
 			$convert_ensembl_names = "no";
 			$ref_seq_name = "felcat5";
-			$x_chromosome_number = "chr19";
+			$x_chromosome_number = "19";
 		}
 
 		if (substr($answer,0,1) eq "4" )
@@ -2793,7 +2792,7 @@ sub load_existing_snp_list
 			$check_snp_list = "no";
 			$convert_ensembl_names = "no";
 			$ref_seq_name = "human";
-			$x_chromosome_number = "chr23";
+			$x_chromosome_number = "23";
 		}
 
 
@@ -2811,6 +2810,7 @@ sub load_existing_snp_list
 			while ($snp_list_line = <SNP_LIST>) 
 			{
 					$line_count = $line_count + 1;
+					next if $snp_list_line =~ /^#/;
 
 					chomp $snp_list_line;
 					@item = split(/\s+/,$snp_list_line);
@@ -6146,29 +6146,33 @@ sub read_vcf_first_seven_columns
 	
 	$vcf_variant_count = $vcf_variant_count + 1;
 
-
-	#################################################################
-	# Convert chrX to relevant number (e.g. chrX --> chr39 for dog) #
-	#################################################################
-	if ($chromosome eq "chrX")
-	{
-		$chromosome = $x_chromosome_number;
-	}
-
     ####################################################################
 	# Remove string 'chr'                                              #
 	####################################################################
     if (substr($chromosome,0,3) eq "chr"){$chromosome = substr($chromosome,3,99)}
-	
 
+
+	#################################################################
+	# Convert chrX to relevant number (e.g. chrX --> chr39 for dog) #
+	#################################################################
+	if ($chromosome eq "X")
+	{
+		$chromosome = $x_chromosome_number;
+	}
+	
 	####################################################################
     # Make joint chromosome and position to check if it is on SNP list #
     ####################################################################
-    $chr_pos = "chr".$chromosome."_".$position;
+    $chr_pos = $chromosome."_".$position;
 
     if (defined $snp_list_hash{$chr_pos})
 	{
-		$on_snp_list = "true";
+		#$on_snp_list = "true";
+		$on_snp_list = $snp_list_hash{$chr_pos};
+	}
+    elsif (defined $snp_list_hash{"chr".$chr_pos})
+	{
+		$on_snp_list = $snp_list_hash{"chr".$chr_pos};
 	}
 	else
 	{
