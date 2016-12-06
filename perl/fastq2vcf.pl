@@ -42,7 +42,7 @@ my %hostnames = (
 # For testing new versions of the software #
 ############################################
 my $bwa_path					="/opt/bwa/bwa"; # This is the current version of bwa. Older versions are in folders labeled /opt/bwa062 or whatever...
-my $gatk_directory				= "gatk"; # "gatk_v1" is the previous GATK version and "gatk" is the current GATK version 3.5
+my $gatk_directory				= "gatk-nightly"; # "gatk_v1" is the previous GATK version and "gatk" is the current GATK version 3.5
 my $samtools_path				= "/opt/samtools/samtools";
 my $picard_path					= "/opt/picard"; # slash added in command string
 
