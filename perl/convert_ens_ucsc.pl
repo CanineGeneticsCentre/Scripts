@@ -21,7 +21,7 @@ use strict;
 use warnings;
 use File::Basename;
 use Getopt::Long;
-
+use PerlIO::gzip;
 
 
 my ($conversion_file, $in, $out);
@@ -42,18 +42,20 @@ GetOptions (
 
 unless (defined $conversion_file && -e $conversion_file){
 	print STDERR "You need to define a conversion file - either ucsc2ensembl or ensmebl2ucsc\n";
-	print STDERR "\n$0 --file <cf3_ucsc2ensembl.txt / cf3_ensembl2ucsc.txt> [--bed --vcf --gff -gtf]\n\n";
+	print STDERR "\n$0 --file <cf3_ucsc2ensembl.txt / cf3_ensembl2ucsc.txt> --in <input file> [--bed --vcf --gff -gtf --out <output file>]\n\n";
 	exit(0);
 }
 
 if (defined $out){
 	close STDOUT;
-	if ($in =~ /gz$/){unless($out =~ /gz$/){ $out .= '.gz';} open(STDOUT, ">:gzip $out") or die "Could not write to $out: $!"; }
+	#open (STDOUT, ">$out") or die "Could not write to $out: $!";
+	if ($in =~ /gz$/){ unless($out =~ /gz$/){ $out .= '.gz';} open STDOUT, ">:gzip", $out or die "Could not write to $out: $!"; }
 	else{ open (STDOUT, ">$out") or die "Could not write to $out: $!"; }
 }
 else{
 	if ($in =~ /gz$/){
-		warn "Unable to write output to gzipped format like input format. You must supply an output vile for this option\n";
+		warn "Unable to write output to gzipped format like input format. You must supply an output file for this option\n";
+		exit(0);
 	}
 }
 
@@ -71,7 +73,7 @@ elsif (defined $gtf){ convert_gtf($in);}
 elsif (defined $vcf){ convert_vcf($in);}
 else{
 	print STDERR "You need to define an input/output filetype - bed vcf gff gtf...\n";
-	print STDERR "\n$0 --file <cf3_ucsc2ensembl.txt / cf3_ensembl2ucsc.txt> [--bed --vcf --gff -gtf]\n\n";
+	print STDERR "\n$0 --file <cf3_ucsc2ensembl.txt / cf3_ensembl2ucsc.txt> --in <input file> [--bed --vcf --gff -gtf --out <output file>]\n\n";
 	exit(0);
 }
 
