@@ -91,15 +91,21 @@ while(<IN>){
 		@exon_lengths = ();
 	}
 }
+close IN;
+
 $trans_hash{$previous_trans}{exon_starts} = join(',', @exon_starts);
 $trans_hash{$previous_trans}{exon_lengths} = join(',', @exon_lengths);
 $trans_hash{$previous_trans}{exon_count} = scalar @exon_lengths;
-#print Dumper %trans_hash;
-#print "\n\n";
 
 print "#Ensembl Genes\n";
 foreach my $tc_id (keys %trans_hash){
 	print join ("\t", $trans_hash{$tc_id}{chr}, ($trans_hash{$tc_id}{start}-1), $trans_hash{$tc_id}{stop}, $trans_hash{$tc_id}{name}, 0, $trans_hash{$tc_id}{strand}, $trans_hash{$tc_id}{tc_start}, $trans_hash{$tc_id}{tc_stop}, $biotype_colors{$trans_hash{$tc_id}{biotype}}, $trans_hash{$tc_id}{exon_count}, $trans_hash{$tc_id}{exon_lengths}, $trans_hash{$tc_id}{exon_starts})."\n";
 }
 
-
+open (GENES, ">ensembl_gene_names.txt") or die "Unable to open file ensembl_gene_names.txt\n";
+foreach my $id (keys %gene_names){
+	if ($id ne $gene_names{$id}){
+		print GENES $id."\t".$gene_names{$id}."\n";
+	}
+}
+close GENES;
