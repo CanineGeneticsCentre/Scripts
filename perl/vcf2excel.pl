@@ -2763,8 +2763,10 @@ sub load_existing_snp_list
 
 		if (substr($answer,0,1) eq "1" )
 		{
-			$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
-			$ensembl_names_file = "/home/genetics/canfam3/canfam3_ensembl_gene_names.txt"; 
+			#$snp_list_file = "/home/genetics/canfam3/canfam3_snps_all.vcf";
+			#$ensembl_names_file = "/home/genetics/canfam3/canfam3_ensembl_gene_names.txt"; 
+			$snp_list_file = "/geneticsdata/alces-flight-image/canfam3/canfam3_snps_all.vcf";
+			$ensembl_names_file = "/geneticsdata/alces-flight-image/canfam3/ensembl_gene_names.txt";
 			$ref_seq_name = "canfam3";
 			$x_chromosome_number = "39"; 
 		}
