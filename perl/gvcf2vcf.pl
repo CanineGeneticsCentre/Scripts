@@ -322,7 +322,8 @@ print "   <9>  Other\n\n";
 $answer = <STDIN>;
 chomp $answer;
 
-if (substr($answer,0,1) eq "1" ){$ref = "/home/genetics/canfam3/canfam3.fasta"; $ref_seq_name = "canfam3";}
+#if (substr($answer,0,1) eq "1" ){$ref = "/home/genetics/canfam3/canfam3.fasta"; $ref_seq_name = "canfam3";}
+if (substr($answer,0,1) eq "1" ){$ref = "/geneticsdata/alces-flight-image/canfam3/ensembl/canfam3.fasta"; $ref_seq_name = "canfam3";}
 
 if (substr($answer,0,1) eq "2" ){$ref = "/home/genetics/equcab2/equcab2.fasta"; $ref_seq_name = "equcab2";}
 if (substr($answer,0,1) eq "3" ){$ref = "/home/genetics/human/human.fasta"; $ref_seq_name = "human";}
