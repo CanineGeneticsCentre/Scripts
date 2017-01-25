@@ -3209,6 +3209,8 @@ sub get_data_from_VCF_INFO_field
 	
 					# T|missense_variant|MODERATE|ENPP1|ENSCAFG00000000001|Transcript|ENSCAFT00000000001|protein_coding|
 					# 18/25||||1919|1802|601|P/H|cCc/cAc|||-1|HGNC|HGNC:3356|tolerated(0.34)|||
+					
+					# T|downstream_gene_variant|MODIFIER|ENPP1|ENSCAFG00000000001|Transcript|ENSCAFT00000000001|protein_coding||||||||||rs21876718|4911|-1|SNV|HGNC|HGNC:3356|YES|||ENSCAFP00000000001||F1PJP0|UPI000059FB01|||||||||||||||
 
 					@vep_items_array = split (/\|/,$vep_effect_string);
 
@@ -3246,7 +3248,7 @@ sub get_data_from_VCF_INFO_field
 						##############################################
 						# If gene name is only ensembl name repeated #
 						##############################################
-						if ($vep_effect_gene_symbol eq $vep_effect_gene_name)
+						if ($vep_effect_gene_symbol eq $vep_effect_gene_name || $vep_effect_gene_symbol eq '')
 						{
 							if (defined $ensembl_names_hash{$vep_effect_gene_name})
 							{
