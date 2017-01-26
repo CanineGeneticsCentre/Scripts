@@ -480,7 +480,8 @@ print "   Enter 9 for other\n\n";
 $answer = <STDIN>;
 chomp $answer;
 
-if (substr($answer,0,1) eq "1" ){$ref = "/home/genetics/canfam3/canfam3.fasta"; $ref_seq_name = "canfam3"; $species = "canis_familiaris";$dummy_dbsnp_file = "/home/genetics/canfam3/canfam3_dummy_DBSNP.vcf";$bowtie_index="/home/genetics/canfam3/bowtie_files/canfam3"}
+#if (substr($answer,0,1) eq "1" ){$ref = "/home/genetics/canfam3/canfam3.fasta"; $ref_seq_name = "canfam3"; $species = "canis_familiaris";$dummy_dbsnp_file = "/home/genetics/canfam3/canfam3_dummy_DBSNP.vcf";$bowtie_index="/home/genetics/canfam3/bowtie_files/canfam3"}
+if (substr($answer,0,1) eq "1" ){$ref = "/geneticsdata/alces-flight-image/canfam3/ensembl/canfam3.fasta"; $ref_seq_name = "canfam3"; $species = "canis_familiaris";$dummy_dbsnp_file = "/home/genetics/canfam3/canfam3_dummy_DBSNP.vcf";$bowtie_index="/geneticsdata/alces-flight-image/canfam3/ensembl/canfam3"}
 if (substr($answer,0,1) eq "2" ){$ref = "/home/genetics/canfam2/canfam2.fasta"; $ref_seq_name = "canfam2"; $species = "canis_familiaris";$dummy_dbsnp_file = "/home/genetics/canfam2/canfam2_dummy_DBSNP.vcf"}
 if (substr($answer,0,1) eq "3" ){$ref = "/home/genetics/equcab2/equcab2.fasta"; $ref_seq_name = "equcab2"; $species = "equus_caballus";$dummy_dbsnp_file = "/home/genetics/equcab2/equcab2_dummy_DBSNP.vcf"}
 if (substr($answer,0,1) eq "4" ){$ref = "/home/genetics/human/human.fasta"; $ref_seq_name = "human"; $species = "homo_sapiens";$dummy_dbsnp_file = "/home/genetics/human/human_dummy_DBSNP.vcf"}
@@ -499,7 +500,7 @@ if (substr($answer,0,1) eq "9" )
 	until (-e "$ref")
 	{
 		print "What is the full path of your reference sequence?\n";
-		print "e.g. /home/genetics/canfam3/canfam3.fasta\n\n";
+		print "e.g. /geneticsdata/alces-flight-image/canfam3/ensembl/canfam3.fasta\n\n";
 		print " >   ";
 		$ref = <STDIN>;
 		chomp $ref;
