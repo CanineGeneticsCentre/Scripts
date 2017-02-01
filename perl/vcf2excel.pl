@@ -4468,7 +4468,7 @@ sub get_genotypes_from_all_samples
 	###############################################################################
 	# The call frequency is the percentage of samples having a good genotype call #
 	###############################################################################
-	$call_frequency_at_this_position = ($no_of_samples_without_omits - $missing_genotypes_at_this_position)/$no_of_samples_without_omits * 100;
+	$call_frequency_at_this_position = ($no_of_samples - $missing_genotypes_at_this_position)/$no_of_samples * 100;
 	$call_frequency_at_this_position = sprintf("%.1f", $call_frequency_at_this_position);
 
 } # get_genotypes_from_all_samples
