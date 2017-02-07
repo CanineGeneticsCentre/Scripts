@@ -285,10 +285,9 @@ foreach $single_line (@map_array)
 
 	if ($remove_chromosome_zero eq "yes")
 	{
+		$linecount = $linecount + 1;
 		if ($chromosome ne "0")
-
 		{
-			$linecount = $linecount + 1;
 			$chromosome_array[$linecount]=$chromosome;
 			$SNP_name_array[$linecount]=$SNP_name;
 			$position_array[$linecount]=$position;
