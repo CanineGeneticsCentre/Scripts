@@ -1595,41 +1595,41 @@ $memory_string = "-Xmx".$memory."g";
 
 			print "  Memory setting for java steps (in Gigabytes)                  [current value = $memory]:      ";
 			$input = <STDIN>;chomp $input;
-			if ($input ne ""){$memory = $input}
-			if ($memory > 60){$memory = "60"}
+			if ($input ne "" && $input <= $memory){$memory = $input}
+			#if ($memory > 60){$memory = "60"}
 
 			print "  Number of CPU threads for bwa                                 [current value = $no_of_threads_bwa]:      ";
 			$input = <STDIN>;chomp $input;
-			if ($input ne ""){$no_of_threads_bwa = $input}
-			if ($no_of_threads_bwa > 16){$no_of_threads_bwa = "16"}
+			if ($input ne "" && $input <= $no_of_threads_bwa){$no_of_threads_bwa = $input}
+			#if ($no_of_threads_bwa > 16){$no_of_threads_bwa = "16"}
 
 			print "  Number of CPU threads (-nct) for GATK variant calling?        [current value = $no_of_threads_gatk_ug_nct]:      ";
 			$input = <STDIN>;chomp $input;
-			if ($input ne ""){$no_of_threads_gatk_ug_nct = $input}
-			if ($no_of_threads_gatk_ug_nct > 16){$no_of_threads_gatk_ug_nct = "16"}
+			if ($input ne "" && $input <= $no_of_threads_gatk_ug_nct){$no_of_threads_gatk_ug_nct = $input}
+			#if ($no_of_threads_gatk_ug_nct > 16){$no_of_threads_gatk_ug_nct = "16"}
 
 			if ($variant_caller eq "UnifiedGenotyper")
 			{
 				print "  Number of data threads (-nt) for GATK variant calling?        [current value = $no_of_threads_gatk_ug_nt]:      ";
 				$input = <STDIN>;chomp $input;
-				if ($input ne ""){$no_of_threads_gatk_ug_nt = $input}
-				if ($no_of_threads_gatk_ug_nt > 16){$no_of_threads_gatk_ug_nt = "16"}
+				if ($input ne "" && $input <= $no_of_threads_gatk_ug_nt){$no_of_threads_gatk_ug_nt = $input}
+				#if ($no_of_threads_gatk_ug_nt > 16){$no_of_threads_gatk_ug_nt = "16"}
 			}
 
 			print "  Number of data threads (-nt) for GATK RealignerTargetCreator? [current value = $no_of_threads_gatk_rtc_nt]:      ";
 			$input = <STDIN>;chomp $input;
-			if ($input ne ""){$no_of_threads_gatk_rtc_nt = $input}
-			if ($no_of_threads_gatk_rtc_nt > 16){$no_of_threads_gatk_rtc_nt = "16"}
+			if ($input ne "" && $input <= $no_of_threads_gatk_rtc_nt){$no_of_threads_gatk_rtc_nt = $input}
+			#if ($no_of_threads_gatk_rtc_nt > 16){$no_of_threads_gatk_rtc_nt = "16"}
 
 			print "  Number of CPU threads (-nt) for GATK BaseRecalibrator?        [current value = $no_of_threads_gatk_br_nct]:      ";
 			$input = <STDIN>;chomp $input;
-			if ($input ne ""){$no_of_threads_gatk_br_nct = $input}
-			if ($no_of_threads_gatk_br_nct > 16){$no_of_threads_gatk_br_nct = "16"}
+			if ($input ne "" && $input <= $no_of_threads_gatk_br_nct){$no_of_threads_gatk_br_nct = $input}
+			#if ($no_of_threads_gatk_br_nct > 16){$no_of_threads_gatk_br_nct = "16"}
 
 			print "  Number of CPU threads (-nt) for GATK PrintReads?              [current value = $no_of_threads_gatk_pr_nct]:      ";
 			$input = <STDIN>;chomp $input;
-			if ($input ne ""){$no_of_threads_gatk_pr_nct = $input}
-			if ($no_of_threads_gatk_pr_nct > 16){$no_of_threads_gatk_pr_nct = "16"}
+			if ($input ne "" && $input <= $no_of_threads_gatk_pr_nct){$no_of_threads_gatk_pr_nct = $input}
+			#if ($no_of_threads_gatk_pr_nct > 16){$no_of_threads_gatk_pr_nct = "16"}
 
 		}# Yes to change memory options
 		else
