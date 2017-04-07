@@ -2418,6 +2418,28 @@ for ($loop_count=1;$loop_count <=$no_of_files;$loop_count++)
 	&log_time($make_clean_bam_time,"Time to clean BAM file $loop_count  (from 'raw' to 'final')");
 	&log_time($make_clean_bam_time_total,"Total time to clean all BAM files (from 'raw' to 'final')");
 	&log_time($current_time,"Current time");
+	
+	###################################
+	# Send e-mail to user re bam file #
+	###################################
+	open(MAIL, "|/usr/sbin/sendmail -t");
+	
+	## Mail Header
+	print MAIL "To: $email_address\n";
+	print MAIL "From: $e_mail_from\n";
+	print MAIL "Subject: FASTQ2VCF: Run $run_title has created the final bam file\n\n";
+	## Mail Body
+	print MAIL "Run title:  $run_title\n\n";
+	print MAIL "Script:     fastq2vcf (GIT) started $version\n\n";
+	
+	print MAIL "Your next generation sequence pipeline has completed the bam file creation\n\n";	
+	print MAIL "BAM file:   \t$final_bam\n\n";
+	
+	print MAIL "For further details on final BAM files:\n\n";
+	print MAIL "  $validate_final_out\n";
+	print MAIL "  $flagstat_final_out\n\n";
+	
+	close(MAIL);
 
 
 	##############################################################################################

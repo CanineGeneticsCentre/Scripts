@@ -10,7 +10,7 @@ use Term::ANSIColor;
 ################
 
 my $version						= "15";
-my $API_key						= "ED9CB85D8738D707FFCDEF22CD3D3DD0E3455A5A";  # update_required. The API key needs to be renewed every so often.
+my $API_key						= "y8QqoiJVQk6SO53fyeUjCg";  # update_required. The API key needs to be renewed every so often.
 
 my $flank_size					= 60; # This can be changed. It sets the extra context" text that is printed to the output file
 
@@ -301,7 +301,7 @@ while (($gene_search_short_name, $value) = each %gene_hash)
 	########################################
 	# Use wget with API key to create file #
 	########################################
-	&run_unix_command("wget \"http://api.europe.omim.org/api/entry/search?search=$gene_search_short_name&start=0&limit=20&apiKey=$API_key\"  -q -O $gene_output_file","no_print");
+	&run_unix_command("wget \"http://api.omim.org/api/entry/search?search=$gene_search_short_name&start=0&limit=20&apiKey=$API_key\"  -q -O $gene_output_file","no_print");
 
 
 	#wget "http://api.omim.org/api/entry/search?search=duchenne&start=0&limit=20&apiKey=ED9CB85D8738D707FFCDEF22CD3D3DD0E3455A5A"
@@ -439,9 +439,9 @@ while (($gene_search_short_name, $value) = each %gene_hash)
 			########################################
 			# Use wget with API key to create file #
 			########################################
-			#&run_unix_command("wget \"http://api.europe.omim.org/api/entry?mimNumber=$UID_string&include=text,referenceList,clinicalSynopsis,allelicVariantList&apiKey=ED9CB85D8738D707FFCDEF22CD3D3DD0E3455A5A\"  -q -O $UID_output_file","print");
+			#&run_unix_command("wget \"http://api.omim.org/api/entry?mimNumber=$UID_string&include=text,referenceList,clinicalSynopsis,allelicVariantList&apiKey=ED9CB85D8738D707FFCDEF22CD3D3DD0E3455A5A\"  -q -O $UID_output_file","print");
 
-			&run_unix_command("wget \"http://api.europe.omim.org/api/entry?mimNumber=$UID_string&include=all&apiKey=$API_key\"  -q -O $UID_output_file","no_print");
+			&run_unix_command("wget \"http://api.omim.org/api/entry?mimNumber=$UID_string&include=all&apiKey=$API_key\"  -q -O $UID_output_file","no_print");
 
 
 			######################################################

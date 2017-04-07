@@ -211,6 +211,7 @@ my $vep_CDS_position_string			= "";
 my $snpEff_protein_position_string	= "";
 my $vep_protein_position_string		= ""; 
 my $vep_gene_string					= "";
+my $vep_ens_string					= "";
 my $vep_sift_prediction_string		= "";
 my $consequence						= "";
 my $consequence_check				= "";
@@ -461,6 +462,7 @@ my @snpEff_single_NMD_array					= ();
 
 # VEP arrays
 my @vep_single_genes_array					= ();
+my @vep_single_geneid_array					= ();
 my @vep_single_effects_array				= ();
 my @vep_single_effect_scores_array			= ();
 my @vep_single_base_change_array			= ();
@@ -909,12 +911,16 @@ while ($vcf_line = <VCF>)
 				if ($effect_predictor eq "VEP") 
 				{
 					print OUT "\t$vep_results_string"; # Consequence
-					print OUT "\t$vep_gene_string"; # Gene
+					#print OUT "\t$vep_gene_string"; # Gene
+					print OUT "\t$vep_gene_string"; # Gene Name
+					print OUT "\t$vep_ens_string"; # Gene ID
 				} 
 				elsif ($effect_predictor eq "snpEff") 
 				{
 					print OUT "\t$snpEff_results_string"; # Consequence
-					print OUT "\t$snpEff_gene_string"; # Gene
+					#print OUT "\t$snpEff_gene_string"; # Gene
+					print OUT "\t$snpEff_gene_string"; # Gene Name
+					print OUT "\t$snpEff_gene_string"; # Gene ID
 				} 
 				
 
@@ -1012,12 +1018,16 @@ while ($vcf_line = <VCF>)
 					if ($effect_predictor eq "VEP") 
 					{
 						print INDELS_OUTPUT "\t$vep_results_string"; # Consequence
-						print INDELS_OUTPUT "\t$vep_gene_string"; # Consequence
+						#print INDELS_OUTPUT "\t$vep_gene_string"; # Gene
+						print INDELS_OUTPUT "\t$vep_gene_string"; # Gene Name
+						print INDELS_OUTPUT "\t$vep_ens_string"; # Gene ID
 					} 
 					elsif ($effect_predictor eq "snpEff") 
 					{
 						print INDELS_OUTPUT "\t$snpEff_results_string"; # Consequence
-						print INDELS_OUTPUT "\t$snpEff_gene_string"; # Consequence
+						#print INDELS_OUTPUT "\t$snpEff_gene_string"; # Gene
+						print INDELS_OUTPUT "\t$snpEff_gene_string"; # Gene Name
+						print INDELS_OUTPUT "\t$snpEff_gene_string"; # Gene ID
 					}
 
 					
@@ -1309,12 +1319,16 @@ while ($vcf_line = <VCF>)
 				if ($effect_predictor eq "VEP") 
 				{
 					print OUT_FILTERED "\t$vep_results_string"; # Consequence
-					print OUT_FILTERED "\t$vep_gene_string"; # Gene
+					#print OUT_FILTERED "\t$vep_gene_string"; # Gene
+					print OUT_FILTERED "\t$vep_gene_string"; # Gene Name
+					print OUT_FILTERED "\t$vep_ens_string"; # Gene ID
 				} 
 				elsif ($effect_predictor eq "snpEff") 
 				{
 					print OUT_FILTERED "\t$snpEff_results_string"; # Consequence
-					print OUT_FILTERED "\t$snpEff_gene_string"; # Gene
+					#print OUT_FILTERED "\t$snpEff_gene_string"; # Gene
+					print OUT_FILTERED "\t$snpEff_gene_string"; # Gene Name
+					print OUT_FILTERED "\t$snpEff_gene_string"; # Gene ID
 				} 
 
 				
@@ -2138,7 +2152,9 @@ while ($vcf_line = <VCF>)
 			print OUT "\tOn SNP list?";
 			print OUT "\tEffect score";
 			print OUT "\tConsequence";
-			print OUT "\tGene";
+			#print OUT "\tGene";"
+			print OUT "\tGene Symbol";
+			print OUT "\tGene ID";
 			
 			if ($effect_predictor eq "snpEff"){print OUT "\tLOF"} else {print OUT "\tSIFT"}
 
@@ -2187,7 +2203,9 @@ while ($vcf_line = <VCF>)
 			print INDELS_OUTPUT "\tMain affected allele is REF";
 			print INDELS_OUTPUT "\tEffect score";
 			print INDELS_OUTPUT "\tConsequence";
-			print INDELS_OUTPUT "\tGene";
+			#print INDELS_OUTPUT "\tGene";
+			print INDELS_OUTPUT "\tGene Symbol";
+			print INDELS_OUTPUT "\tGene ID";
 
 			print INDELS_OUTPUT "\tAlt";
 			print INDELS_OUTPUT "\tallele_A";
@@ -2217,7 +2235,9 @@ while ($vcf_line = <VCF>)
 		print OUT_FILTERED "\tOn SNP list?";
 		print OUT_FILTERED "\tEffect score";
 		print OUT_FILTERED "\tConsequence";
-		print OUT_FILTERED "\tGene";
+		#print OUT_FILTERED "\tGene";
+		print OUT_FILTERED "\tGene Symbol";
+		print OUT_FILTERED "\tGene ID";
 		
 
 		if ($effect_predictor eq "snpEff"){print OUT_FILTERED "\tLOF"} else {print OUT_FILTERED "\tSIFT"}
@@ -3143,6 +3163,7 @@ sub get_data_from_VCF_INFO_field
 				#Set these VEP variables to zero to start with
 				$vep_results_string 				= "";
 				$vep_gene_string 					= "";
+				$vep_ens_string 					= "";
 				$vep_base_change_string 			= "";
 				$vep_amino_acid_change_string 		= "";
 				$vep_CDS_position_string			= "";
@@ -3224,7 +3245,7 @@ sub get_data_from_VCF_INFO_field
 
 					if ($vep_items_array_size > 1) {$vep_effect_impact = $vep_items_array[$IMPACT_field_order];} else {$vep_effect_impact = ""}
 
-					if ($vep_items_array_size > 2) {$vep_effect_gene_symbol = $vep_items_array[$SYMBOL_field_order];} else {$vep_effect_gene_name = ""} # real name like SRF1
+					if ($vep_items_array_size > 2) {$vep_effect_gene_symbol = $vep_items_array[$SYMBOL_field_order];} else {$vep_effect_gene_symbol = ""} # real name like SRF1
 					if ($vep_items_array_size > 3) {$vep_effect_gene_name = $vep_items_array[$Gene_field_order];} else {$vep_effect_gene_name = ""}   # ensembl name like ENSCAFG00000321
 
 					if ($vep_items_array_size > 15) {$vep_effect_base_change = $vep_items_array[$Codons_field_order];} else {$vep_effect_base_change = ""} 
@@ -3372,6 +3393,7 @@ sub get_data_from_VCF_INFO_field
 					# set of arrays, e.g. gene name, SIFT predcition etc. #                                   
 					#######################################################
 					$vep_single_genes_array[$effect_count] = $vep_effect_gene_name;
+					$vep_single_geneid_array[$effect_count] = $vep_effect_gene_symbol;
 					$vep_single_effects_array[$effect_count] = $vep_effect;
 					$vep_single_effect_scores_array[$effect_count] = $vep_effect_score;
 					$vep_single_protein_position_array[$effect_count] = $vep_protein_position;
@@ -3398,6 +3420,7 @@ sub get_data_from_VCF_INFO_field
 						print "vep_effect_string:       \t$vep_effect_string\n\n";
 						print "vep_effect_gene_name:    \t$vep_effect_gene_name\n";
 						print "vep_gene_string:         \t$vep_gene_string\n";
+						print "vep_ens_string:          \t$vep_ens_string\n";
 						print "vep_results_string:      \t$vep_results_string\n";
 
 						$answer=<STDIN>;
@@ -3417,6 +3440,7 @@ sub get_data_from_VCF_INFO_field
 					{
 						print "\t======\nEffect count: $effect_count\n";
 						print "\t\tvep_single_genes_array[$effect_count]:             \t$vep_single_genes_array[$effect_count]\n";
+						print "\t\tvep_single_geneid_array[$effect_count]:            \t$vep_single_geneid_array[$effect_count]\n";
 						print "\t\tvep_single_effects_array[$effect_count]:           \t$vep_single_effects_array[$effect_count]\n";
 						print "\t\tvep_single_effect_scores_array[$effect_count]:     \t$vep_single_effect_scores_array[$effect_count]\n";
 						print "\t\tvep_single_sift_prediction_array[$effect_count]:   \t$vep_single_sift_prediction_array[$effect_count]\n\n\n";
@@ -3440,7 +3464,7 @@ sub get_data_from_VCF_INFO_field
 						# Now check if this data has been added before by making up a check string of the #
 						# four key bits of data, and using it to compare to previous check strings        #
 						###################################################################################
-						$vep_check_string = $vep_single_effect_scores_array[$effect_count]."_".$vep_single_effects_array[$effect_count]."_".$vep_single_genes_array[$effect_count]."_".$vep_single_sift_prediction_array[$effect_count];
+						$vep_check_string = $vep_single_effect_scores_array[$effect_count]."_".$vep_single_effects_array[$effect_count]."_".$vep_single_genes_array[$effect_count]."_".$vep_single_geneid_array[$effect_count]."_".$vep_single_sift_prediction_array[$effect_count];
 
 						###################################################
 						# Check through all previous effect check_strings #
@@ -3448,7 +3472,7 @@ sub get_data_from_VCF_INFO_field
 						$miss_this_one = "false";
 						for ($check_count = 1; $check_count < $effect_count; $check_count++)
 						{
-							$vep_check_string_previous = $vep_single_effect_scores_array[$check_count]."_".$vep_single_effects_array[$check_count]."_".$vep_single_genes_array[$check_count]."_".$vep_single_sift_prediction_array[$check_count];
+							$vep_check_string_previous = $vep_single_effect_scores_array[$check_count]."_".$vep_single_effects_array[$check_count]."_".$vep_single_genes_array[$check_count]."_".$vep_single_geneid_array[$check_count]."_".$vep_single_sift_prediction_array[$check_count];
 
 							if ($vep_check_string_previous eq $vep_check_string)
 							{
@@ -3471,6 +3495,7 @@ sub get_data_from_VCF_INFO_field
 						{
 							$vep_results_string = $vep_results_string."+".$vep_single_effects_array[$effect_count];
 							$vep_gene_string = $vep_gene_string."+".$vep_single_genes_array[$effect_count];
+							$vep_ens_string  = $vep_ens_string."+".$vep_single_geneid_array[$effect_count];
 
 							########################################
 							# Only include these if chosen by user #
@@ -3512,6 +3537,7 @@ sub get_data_from_VCF_INFO_field
 						print "Effect_count: $effect_count/$no_of_vep_effects\n\n";
 						print "  vep_results_string:             \t$vep_results_string\n";
 						print "  vep_gene_string:                \t$vep_gene_string\n";
+						print "  vep_ens_string:                 \t$vep_ens_string\n";
 						print "  vep_sift_prediction_string:     \t$vep_sift_prediction_string\n";
 						print "  max_effect_score:               \t$max_effect_score\n\n";
 
@@ -3531,6 +3557,10 @@ sub get_data_from_VCF_INFO_field
 				if (index($vep_gene_string,"+") == 0)
 				{
 					$vep_gene_string = substr($vep_gene_string,1);
+				} 
+				if (index($vep_ens_string,"+") == 0)
+				{
+					$vep_ens_string = substr($vep_ens_string,1);
 				}
 				if (index($vep_base_change_string," ") == 0)
 				{
@@ -3575,6 +3605,7 @@ sub get_data_from_VCF_INFO_field
 					print "After leading pluses have been removed etc\n";print "no_of_vep_effects: $no_of_vep_effects\n\n";
 					print "  vep_results_string:             \t$vep_results_string\n";
 					print "  vep_gene_string:                \t$vep_gene_string\n";
+					print "  vep_ens_string:                 \t$vep_ens_string\n";
 					print "  vep_sift_prediction_string:     \t$vep_sift_prediction_string\n";
 					print "  max_effect_score:               \t$max_effect_score\n\n";
 
