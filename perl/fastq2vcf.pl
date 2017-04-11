@@ -35,6 +35,7 @@ my %hostnames = (
 	'GEN-X1404-WS02'	=> 'ws2',
 	'ws3'				=> 'ws3',
 	'workstation3'		=> 'ws3',
+	'workstation10'		=> 'ws10',
 	'NGSBACK3'			=> 'samba64',
 );
 
@@ -109,6 +110,19 @@ if ($hostname eq 'ws1' || $hostname eq 'ws2')
 elsif  ($hostname eq 'ws3')
 {
 	$memory						= "50"; # memory setting for Java in gigabytes
+	$no_of_threads_bwa			= "24";
+	$no_of_threads_gatk_ug_nct	= "24";  # UnifiedGenotyper -nct (or HaplotypeCaller) (UG has to be 1)
+	$no_of_threads_gatk_ug_nt	= "24";  # UnifiedGenotyper -nt (but NOT HaplotypeCaller)
+	$no_of_threads_gatk_pr_nct	= "24";  # PrintReads -nct                <== This one is used for PrintReads
+	$no_of_threads_gatk_br_nct	= "24";  # BaseRecalibrator -nct          <== This one is used for BaseRecalibrator
+	$no_of_threads_gatk_rtc_nt	= "24"; # RealignerTargetCreator         <== This one is used for RealignerTargetCreator
+	$workstation 				= "true";
+	$e_mail_from 				= 'NGS_analysis@'.$hostname.'.aht.org.uk'; # Who e-mails come from
+}
+#Workstation 10
+elsif  ($hostname eq 'ws10')
+{
+	$memory						= "32"; # memory setting for Java in gigabytes
 	$no_of_threads_bwa			= "24";
 	$no_of_threads_gatk_ug_nct	= "24";  # UnifiedGenotyper -nct (or HaplotypeCaller) (UG has to be 1)
 	$no_of_threads_gatk_ug_nt	= "24";  # UnifiedGenotyper -nt (but NOT HaplotypeCaller)
