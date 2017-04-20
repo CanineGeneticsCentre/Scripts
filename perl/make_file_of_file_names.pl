@@ -111,7 +111,7 @@ if ($files_to_use eq "vcf")
 		print "   VCF file:  ";
 		$vcf_file = <STDIN>;
 		chomp $vcf_file;
-		if ($vcf_file eq "ls"){print "\n";system ("ls *.vcf");print "\n"}
+		if ($vcf_file eq "ls"){print "\n";system ("ls *.vcf *.vcf.gz");print "\n"}
 		if ($vcf_file ne "ls"){if (! -e $vcf_file){print "\n\n>>>>>>>>  File $vcf_file not found.  Try again.  <<<<<<<<\n\n";}}
 	}	
 	
