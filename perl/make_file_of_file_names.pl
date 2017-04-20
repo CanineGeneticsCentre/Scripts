@@ -125,6 +125,7 @@ if ($files_to_use eq "vcf")
 	print "\n\nThese are the sample names from the VCF file:\n\n";
 	
 	foreach my $sample (@sample_name_array){
+		chomp $sample;
 		print "$line: \t$sample\n";
 
 		print OUT "$sample";
@@ -352,14 +353,14 @@ else{
 	} # fastq_gzipped
 	
 	closedir (DIR);
-	
-	$command = "sort $list_file_unsorted > $list_file";
-	system ("$command");
-	
-	system ("rm $list_file_unsorted");
 }
 
 close OUT;
+	
+$command = "sort $list_file_unsorted > $list_file";
+system ("$command");
+
+system ("rm $list_file_unsorted");
 
 print "\n\n############\n";
 print "# FINISHED #\n";
