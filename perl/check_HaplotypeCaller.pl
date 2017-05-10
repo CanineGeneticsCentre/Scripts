@@ -239,28 +239,24 @@ if ($input_method eq "multiple")
 
 		if ($array_size == 1)
 		{
-			if (index($single_line,"chr") > -1)
-			{
+			if (index($single_line,"chr") > -1){
 				$chromosome = substr($single_line,3,index($single_line,":")-3);
-				if ($chromosome eq "39"){$chromosome = "X"}
 			} else {
-				$chromosome = substr($region,0,index($region,":"));
+				$chromosome = substr($single_line,0,index($single_line,":"));
 			}
-			if (index($region,":") > -1)
-			{
+			if ($chromosome eq "39"){$chromosome = "X"}
+
+			if (index($single_line,":") > -1){
 				$position = substr($single_line,index($single_line,":")+1,99);
 			}
 		}
-
-		if ($array_size == 2)
-		{
+		if ($array_size == 2){
 			$chromosome = $item[0];
 			$position = $item[1];
 			if ($chromosome eq "39"){$chromosome = "X"}
 		}
 
-		if ($array_size > 2)
-		{
+		if ($array_size > 2){
 			&print_message("There should only be 1 or 2 columns in this file","warning");
 			exit;
 		}
