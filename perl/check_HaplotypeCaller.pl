@@ -22,7 +22,8 @@ use Cwd;
 
 my $version							= "w3";
 my $testing_mode					= "off";
-my $flank_size						= 1000;
+#my $flank_size						= 1000;
+my $flank_size						= 500;
 
 my $memory_in_Gb				= 0; # memory setting for Java in gigabytes
 
@@ -186,6 +187,8 @@ if ($input_method eq "single")
 	if (index($region,"chr") > -1)
 	{
 		$chromosome = substr($region,3,index($region,":")-3);
+	} else {
+		$chromosome = substr($region,0,index($region,":"));
 	}
 	if (index($region,":") > -1)
 	{
@@ -240,6 +243,8 @@ if ($input_method eq "multiple")
 			{
 				$chromosome = substr($single_line,3,index($single_line,":")-3);
 				if ($chromosome eq "39"){$chromosome = "X"}
+			} else {
+				$chromosome = substr($region,0,index($region,":"));
 			}
 			if (index($region,":") > -1)
 			{
@@ -296,6 +301,8 @@ $complete_processing_string = "-forceActive -disableOptimizations ";
 if (index($region,"chr") > -1)
 {
 	$chromosome = substr($region,3,index($region,":")-3);
+} else {
+	$chromosome = substr($region,0,index($region,":"));
 }
 if (index($region,":") > -1)
 {
@@ -318,7 +325,7 @@ for ($position_count = 1; $position_count <= $no_of_positions; $position_count++
 	$position_left = $position - $flank_size;
 	$position_right = $position + $flank_size;
 
-	print "$position_count\tchr$chromosome:$position_left-$position_right\n";
+	print "$position_count\t$chromosome:$position_left-$position_right\n";
 
 	$GATK_region_string = $GATK_region_string." -L ".$chromosome.":".$position_left."-".$position_right;
 }
