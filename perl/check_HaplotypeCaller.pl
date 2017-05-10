@@ -506,7 +506,7 @@ sub get_prefix
 	}
 
 	if (rindex($_filename,"/") > 0){
-		$_filename = substr($_filename, 0, rindex($_filename,"/"));
+		$_filename = substr($_filename, rindex($_filename,"/"));
 	}
 	elsif (rindex($_filename,"/") == -1){
 		$_filename = $_filename;
