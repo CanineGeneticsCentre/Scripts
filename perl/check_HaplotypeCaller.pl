@@ -496,21 +496,23 @@ sub run_unix_command_single
 
 sub get_prefix
 {
-	my $_filename 	= "";
-	my $_dot_pos	= 0;
+	my $_filename 	= $_[0];
 
-	$_filename = $_[0];
-	$_dot_pos = rindex($_filename,".");
-
-	if (rindex($_filename,".") > 0)
-	{
+	if (rindex($_filename,".") > 0){
 		$_filename = substr($_filename, 0, rindex($_filename,"."));
 	}
-	if (rindex($_filename,".") == -1)
-	{
+	elsif (rindex($_filename,".") == -1){
 		$_filename = $_filename;
 	}
 
+	if (rindex($_filename,"/") > 0){
+		$_filename = substr($_filename, 0, rindex($_filename,"/"));
+	}
+	elsif (rindex($_filename,"/") == -1){
+		$_filename = $_filename;
+	}
+
+	die($_filename);
 	$_filename = $_filename;
 
 } # get_prefix
