@@ -22,7 +22,8 @@ use Cwd;
 
 my $version							= "w3";
 my $testing_mode					= "off";
-my $flank_size						= 1000;
+#my $flank_size						= 1000;
+my $flank_size						= 500;
 
 my $memory_in_Gb				= 0; # memory setting for Java in gigabytes
 
@@ -186,6 +187,8 @@ if ($input_method eq "single")
 	if (index($region,"chr") > -1)
 	{
 		$chromosome = substr($region,3,index($region,":")-3);
+	} else {
+		$chromosome = substr($region,0,index($region,":"));
 	}
 	if (index($region,":") > -1)
 	{
@@ -236,26 +239,24 @@ if ($input_method eq "multiple")
 
 		if ($array_size == 1)
 		{
-			if (index($single_line,"chr") > -1)
-			{
+			if (index($single_line,"chr") > -1){
 				$chromosome = substr($single_line,3,index($single_line,":")-3);
-				if ($chromosome eq "39"){$chromosome = "X"}
+			} else {
+				$chromosome = substr($single_line,0,index($single_line,":"));
 			}
-			if (index($region,":") > -1)
-			{
+			if ($chromosome eq "39"){$chromosome = "X"}
+
+			if (index($single_line,":") > -1){
 				$position = substr($single_line,index($single_line,":")+1,99);
 			}
 		}
-
-		if ($array_size == 2)
-		{
+		if ($array_size == 2){
 			$chromosome = $item[0];
 			$position = $item[1];
 			if ($chromosome eq "39"){$chromosome = "X"}
 		}
 
-		if ($array_size > 2)
-		{
+		if ($array_size > 2){
 			&print_message("There should only be 1 or 2 columns in this file","warning");
 			exit;
 		}
@@ -296,6 +297,8 @@ $complete_processing_string = "-forceActive -disableOptimizations ";
 if (index($region,"chr") > -1)
 {
 	$chromosome = substr($region,3,index($region,":")-3);
+} else {
+	$chromosome = substr($region,0,index($region,":"));
 }
 if (index($region,":") > -1)
 {
@@ -318,7 +321,7 @@ for ($position_count = 1; $position_count <= $no_of_positions; $position_count++
 	$position_left = $position - $flank_size;
 	$position_right = $position + $flank_size;
 
-	print "$position_count\tchr$chromosome:$position_left-$position_right\n";
+	print "$position_count\t$chromosome:$position_left-$position_right\n";
 
 	$GATK_region_string = $GATK_region_string." -L ".$chromosome.":".$position_left."-".$position_right;
 }
@@ -489,18 +492,19 @@ sub run_unix_command_single
 
 sub get_prefix
 {
-	my $_filename 	= "";
-	my $_dot_pos	= 0;
+	my $_filename 	= $_[0];
 
-	$_filename = $_[0];
-	$_dot_pos = rindex($_filename,".");
-
-	if (rindex($_filename,".") > 0)
-	{
+	if (rindex($_filename,".") > 0){
 		$_filename = substr($_filename, 0, rindex($_filename,"."));
 	}
-	if (rindex($_filename,".") == -1)
-	{
+	elsif (rindex($_filename,".") == -1){
+		$_filename = $_filename;
+	}
+
+	if (rindex($_filename,"/") > 0){
+		$_filename = substr($_filename, rindex($_filename,"/")+1);
+	}
+	elsif (rindex($_filename,"/") == -1){
 		$_filename = $_filename;
 	}
 
