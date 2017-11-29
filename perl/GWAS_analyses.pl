@@ -1408,7 +1408,7 @@ if ($do_emmax eq "y")
 	&delete_file("$prefix_with_suffix".".reml");
 	&delete_file ("$prefix_with_suffix"."_emmax_qq.ps");
 	&delete_file ("gnufile.xtxt");
-	&delete_file("$prefix_with_suffix"."_emmax_pvalues.out");
+	#&delete_file("$prefix_with_suffix"."_emmax_pvalues.out");
 	
 	 
 } # end of if do EMMAX = y

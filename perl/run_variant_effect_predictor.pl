@@ -23,7 +23,8 @@ use Term::ANSIColor;
 # Constants
 my $version					= "15";
 #my $vep_path				= "/usr/bin/vep";
-my $vep_path				= "perl /opt/vep82/variant_effect_predictor.pl";
+#my $vep_path				= "perl /opt/vep82/variant_effect_predictor.pl";
+my $vep_path				= "perl /opt/vep87/variant_effect_predictor.pl";
 my $fork_string				= " --fork 4";
 
 # VEP Database names (species name is used so no update required)

@@ -534,7 +534,8 @@ $ref_prefix = &get_prefix ($ref);
 # Check if REF.DICT files exist (if a pre-indexed file is chosen) #
 ###################################################################
 
-if ((! -e "$ref") || (! -e "$ref.bwt") || (! -e "$ref.rbwt") || (! -e "$ref.rpac") || (! -e "$ref.pac") || (! -e "$ref.rsa") || (! -e "$ref.sa") || (! -e "$ref.amb") || (! -e "$ref.dict") || (! -e "$ref.ann") || (! -e "$ref.fai"))
+#if ((! -e "$ref") || (! -e "$ref.bwt") || (! -e "$ref.rbwt") || (! -e "$ref.rpac") || (! -e "$ref.pac") || (! -e "$ref.rsa") || (! -e "$ref.sa") || (! -e "$ref.amb") || (! -e "$ref.dict") || (! -e "$ref.ann") || (! -e "$ref.fai"))
+if ((! -e "$ref") || (! -e "$ref.bwt") || (! -e "$ref.pac") || (! -e "$ref.sa") || (! -e "$ref.amb") || (! -e "$ref.dict") || (! -e "$ref.ann") || (! -e "$ref.fai"))
 { 
 	print "##############################\n";
 	print "#  REFERENCE SEQUENCE ERROR  #\n";
