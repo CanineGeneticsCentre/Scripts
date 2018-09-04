@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENS=87
+ENS=93
 mkdir -p e${ENS}/download
 cd e${ENS}/download
 
@@ -11,7 +11,7 @@ wget ftp://ftp.ensembl.org/pub/release-${ENS}/fasta/canis_familiaris/dna/Canis_f
 wget ftp://ftp.ensembl.org/pub/release-${ENS}/fasta/canis_familiaris/dna/Canis_familiaris.CanFam3.1.dna_sm.chromosome.X.fa.gz
 wget ftp://ftp.ensembl.org/pub/release-${ENS}/fasta/canis_familiaris/dna/Canis_familiaris.CanFam3.1.dna_sm.nonchromosomal.fa.gz
 
-wget ftp://ftp.ensembl.org/pub/release-87/gtf/canis_familiaris/Canis_familiaris.CanFam3.1.${ENS}.gtf.gz
+wget ftp://ftp.ensembl.org/pub/release-${ENS}/gtf/canis_familiaris/Canis_familiaris.CanFam3.1.${ENS}.gtf.gz
 
 cd ../
 
@@ -22,7 +22,8 @@ zcat download/Canis_familiaris.CanFam3.1.dna_sm.chromosome.MT.fa >> canfam3.fast
 zcat download/Canis_familiaris.CanFam3.1.dna_sm.chromosome.X.fa >> canfam3.fasta
 zcat download/Canis_familiaris.CanFam3.1.dna_sm.nonchromosomal.fa.gz >> canfam3.fasta
 
-samtools faidx canfam3.fasta; bwa index -a bwtsw canfam3.fasta
+samtools faidx canfam3.fasta; 
+/opt/bwa/bwa index -a bwtsw canfam3.fasta
 #CreateSequenceDictionary REFERENCE=canfam3.fasta OUTPUT=canfam3.fasta.dict
 java -jar /opt/picard/CreateSequenceDictionary.jar REFERENCE=canfam3.fasta OUTPUT=canfam3.fasta.dict
 
