@@ -32,4 +32,8 @@ gunzip download/Canis_familiaris.CanFam3.1.${ENS}.gtf.gz
 ~/git/Scripts/perl/gtf2bed.pl download/Canis_familiaris.CanFam3.1.${ENS}.gtf > Canis_familiaris.CanFam3.1.${ENS}.bed
 gzip download/Canis_familiaris.CanFam3.1.${ENS}.gtf
 
+ln -s canfam3.fasta canfam3.fa
+ln -s canfam3.fasta.dict canfam3.dict
+
+rm -rf download/
 
