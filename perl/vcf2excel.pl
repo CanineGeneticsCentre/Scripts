@@ -580,7 +580,12 @@ if ($effect_predictor eq "both"){&get_effect_predictor;}
 # Open the input VCF file                                 #
 # This is the MAIN LOOP of the script                     #
 ###########################################################
-open (VCF, "$vcf_file") || die "Cannot open $vcf_file";
+if ($vcf_file =~ /gz$/){
+	open(VCF, "gunzip -c $vcf_file |") or die "gunzip -c $vcf_file: $!";
+}
+else{
+	open (VCF, "$vcf_file") || die "Cannot open $vcf_file";
+}
 $line_count = 0;
 $vep_line_count = 1;
 $passed_header_lines = "false";
@@ -3255,9 +3260,7 @@ sub get_data_from_VCF_INFO_field
 					if ($vep_items_array_size > 13) {$vep_protein_position = $vep_items_array[$Protein_position_field_order];} else {$vep_protein_position = ""}
 
 					$vep_sift_prediction = "";
-					if ($vep_items_array_size > 29) {$vep_sift_prediction = $vep_items_array[$SIFT_field_order]} else {$vep_sift_prediction = ""}
-
-
+					if ($vep_items_array_size > 29 && defined($vep_items_array[$SIFT_field_order])) {$vep_sift_prediction = $vep_items_array[$SIFT_field_order]} else {$vep_sift_prediction = ""}
 
 					###################################################
 					# Try to look up real name from ensembl gene name #
@@ -6881,7 +6884,16 @@ sub merge_indels
 ###########################################################
 sub check_VCF_file
 {
-	open (VCF_TEMPORARY, "$vcf_file") || die "Cannot open $vcf_file";
+	#open (VCF_TEMPORARY, "$vcf_file") || die "Cannot open $vcf_file";
+	
+	if ($vcf_file =~ /gz$/){
+		open(VCF_TEMPORARY, "gunzip -c $vcf_file |") or die "gunzip -c $vcf_file: $!";
+	}
+	else{
+		open (VCF_TEMPORARY, "$vcf_file") || die "Cannot open $vcf_file";
+	}
+	
+	
 	$line_count = 0;
 	$vep_line_count = 1;
 	$passed_header_lines = "false";
