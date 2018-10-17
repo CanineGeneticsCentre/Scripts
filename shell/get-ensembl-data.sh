@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENS=93
+ENS=94
 mkdir -p e${ENS}/download
 cd e${ENS}/download
 
@@ -12,6 +12,11 @@ wget ftp://ftp.ensembl.org/pub/release-${ENS}/fasta/canis_familiaris/dna/Canis_f
 wget ftp://ftp.ensembl.org/pub/release-${ENS}/fasta/canis_familiaris/dna/Canis_familiaris.CanFam3.1.dna_sm.nonchromosomal.fa.gz
 
 wget ftp://ftp.ensembl.org/pub/release-${ENS}/gtf/canis_familiaris/Canis_familiaris.CanFam3.1.${ENS}.gtf.gz
+
+wget ftp://ftp.ensembl.org/pub/release-${ENS}/variation/vcf/canis_familiaris/canis_familiaris.vcf.gz
+wget ftp://ftp.ensembl.org/pub/release-${ENS}/variation/vcf/canis_familiaris/canis_familiaris.vcf.gz.tbi
+wget ftp://ftp.ensembl.org/pub/release-${ENS}/variation/vcf/canis_familiaris/canis_familiaris_structural_variations.vcf.gz
+wget ftp://ftp.ensembl.org/pub/release-${ENS}/variation/vcf/canis_familiaris/canis_familiaris_structural_variations.vcf.gz.tbi
 
 cd ../
 
