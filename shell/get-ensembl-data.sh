@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ENS=94
-mkdir -p e${ENS}/download
-cd e${ENS}/download
+ENS=95
+mkdir -p $PWD/CanFam3.1/e${ENS}/download
+cd $PWD/CanFam3.1/e${ENS}/download
 
 ##DOWNLOAD DATA
 for i in `seq 1 38`; do wget ftp://ftp.ensembl.org/pub/release-${ENS}/fasta/canis_familiaris/dna/Canis_familiaris.CanFam3.1.dna_sm.chromosome.$i.fa.gz; done
