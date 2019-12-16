@@ -11,15 +11,16 @@
 #######################################################
 
 use strict;
-#use File::Basename; # Is this used?
+use File::Basename; # Is this used?
 use Term::ANSIColor;
 use List::Util qw[min max];
-
+use Getopt::Long;
 
 # VERSION OF SOFTWARE #
 my $version							= "80";
 
 my $show							= "false"; # for debugging
+my $default = 0;
 
 #DEBUGGING
 my $position_to_debug				= ""; # Can add a genome position here for debugging, e.g. set as "12013456"
@@ -79,8 +80,8 @@ my $monomorphic						= "false"; # Are all the genotypes for the samples in this 
 my $omit_low_call_frequencies		= "false"; # Omit variants with low caal frequencies from the filtered output (see $call_frequency_threshold)
 my $only_one_case					= "false"; # If thee is only one case and many controls, the seg scores are calculated differently
 
-my $check_snp_list					= "yes"; # Yes or No.  Check each SNP to filtered file is on known SNP list. Dog only
-my $convert_ensembl_names			= "yes"; # Yes or No.  Convert ensembl names to genes names (if snpEff or VEP doesn't) Dog only
+my $check_snp_list					= "no"; # Yes or No.  Check each SNP to filtered file is on known SNP list. Dog only
+my $convert_ensembl_names			= "no"; # Yes or No.  Convert ensembl names to genes names (if snpEff or VEP doesn't) Dog only
 
 #Strings
 my $run_title						= ""; # this becomes part of the name of the output file
@@ -479,6 +480,37 @@ my %merged_hash								= (); # merged indels
 my %snp_list_hash							= (); # List of SNPs in known SNP list file
 my %ensembl_names_hash						= (); # List of ensembl gene names with real gene name (dog only)
 
+
+
+GetOptions(
+	"default" => \$default,
+	"vcf=s" => \$vcf_file,
+	"status_file=s" => \$disease_status_file,
+	"effect_score=i" => \$minimum_effect_score,
+	"seg_score=i" => \$second_seg_score
+);
+
+if ($default){
+	
+	unless (defined $vcf_file && -e $vcf_file){
+		print STDERR "When using default parameters you need to provide a VCF file.\n";
+		print STDERR "\n$0 --default --vcf <VCF file> --status_file <disease status file> [--effect_score <X> --seg_score <X>]\n\n";
+		exit(0);
+	}
+		
+	unless (defined $disease_status_file && -e $disease_status_file){
+		print STDERR "When using default parameters you need to provide a disease status file.\n";
+		print STDERR "\n$0 --default --vcf <VCF file> --status_file <disease status file> [--effect_score <X> --seg_score <X>]\n\n";
+		exit(0);
+	}
+	
+	
+	print "vcf2excel run with DEFAULT settings...\n";
+	#exit(0);
+	
+}
+
+if (!$default){
 print color 'reset';
 print color 'bold magenta';
 
@@ -516,16 +548,17 @@ print "\t1.  Multi-column VCF file\n";
 print "\t2.  Disease status file (sample names with disease statuses - 'Affected', 'Carrier', 'Normal' or 'Omit')\n";
 print "\t         [use 'make_file_of_file_names' for this]\n\n";
 
-if ($position_to_debug ne "")
-{
-	&print_message("This is set to stop at position $position_to_debug for debugging","warning");
-	$answer=<STDIN>;
+	if ($position_to_debug ne "")
+	{
+		&print_message("This is set to stop at position $position_to_debug for debugging","warning");
+		$answer=<STDIN>;
+	}
+	
+	###########################################################
+	# Get the name of the input VCF file                      #
+	###########################################################
+	$vcf_file = &get_input_file ("What is the name of the input VCF file","vcf");
 }
-
-###########################################################
-# Get the name of the input VCF file                      #
-###########################################################
-$vcf_file = &get_input_file ("What is the name of the input VCF file","vcf");
 
 
 ###########################################################
@@ -580,7 +613,12 @@ if ($effect_predictor eq "both"){&get_effect_predictor;}
 # Open the input VCF file                                 #
 # This is the MAIN LOOP of the script                     #
 ###########################################################
-open (VCF, "$vcf_file") || die "Cannot open $vcf_file";
+if ($vcf_file =~ /gz$/){
+	open(VCF, "gunzip -c $vcf_file |") or die "gunzip -c $vcf_file: $!";
+}
+else{
+	open (VCF, "$vcf_file") || die "Cannot open $vcf_file";
+}
 $line_count = 0;
 $vep_line_count = 1;
 $passed_header_lines = "false";
@@ -1437,9 +1475,11 @@ while ($vcf_line = <VCF>)
 		############################################
 		# Report which variant caller was detected #
 		############################################
-		&print_message("Variant caller check...","message");
-		print "Variant caller detected from header lines: $variant_caller\n\n";
-		print "\n\t>>Press RETURN to continue ";   $answer = <STDIN>;
+		if (!$default){
+			&print_message("Variant caller check...","message");
+			print "Variant caller detected from header lines: $variant_caller\n\n";
+			print "\n\t>>Press RETURN to continue ";   $answer = <STDIN>;
+		}
 
 
 		############################################################
@@ -1473,7 +1513,7 @@ while ($vcf_line = <VCF>)
 		
 		for ($sample_count = 1; $sample_count <= $no_of_samples; $sample_count++)
 		{
-			print "$sample_count \t$sample_name_array_input_order[$sample_count]\n";
+			print "$sample_count \t$sample_name_array_input_order[$sample_count]\n" unless $default;
 			
 			if (length($sample_name_array_input_order[$sample_count]) > $max_sample_name_length)
 			{
@@ -1481,10 +1521,12 @@ while ($vcf_line = <VCF>)
 			}
 		}
 		
-		print "\nThere are $no_of_samples samples in this multi-column VCF file.\n\n";
-		print "\t>>If these columns look OK, press 'return' to continue .\n\n";
-		
-        $answer = <STDIN>;
+		if (!$default){
+			print "\nThere are $no_of_samples samples in this multi-column VCF file.\n\n";
+			print "\t>>If these columns look OK, press 'return' to continue .\n\n";
+			
+			$answer = <STDIN>;
+        }
 		
 		
 		############################################################
@@ -1531,10 +1573,10 @@ while ($vcf_line = <VCF>)
 		############################################################
 		# Make sure the list file is in Unix format                #
 		############################################################
-		print "\n";
+		print "\n" unless $default;
 		$command = "dos2unix $disease_status_file";
 		system("$command");
-		print "\n";
+		print "\n" unless $default;
 
 
 		############################################################
@@ -1556,16 +1598,18 @@ while ($vcf_line = <VCF>)
 
 		if (($affected_count_ds_file == 1) && ($normal_count_ds_file > 1) && ($single_case_scoring eq "true"))
 		{
-			&print_message("Single case segregation scores selected","message");
-
-			print "Number of affected samples:    \t$affected_count_ds_file\n";
-			print "Number of unaffected samples:  \t$normal_count_ds_file\n\n";
-
-			print "Because there is a single case and multiple controls, a special\n";
-			print "segregation scoring system will be used.  Controls will only\n";
-			print "score if their genotype is DIFFERENT to the single case\n\n";
-
-			&pause;
+			if (!$default){
+				&print_message("Single case segregation scores selected","message");
+	
+				print "Number of affected samples:    \t$affected_count_ds_file\n";
+				print "Number of unaffected samples:  \t$normal_count_ds_file\n\n";
+	
+				print "Because there is a single case and multiple controls, a special\n";
+				print "segregation scoring system will be used.  Controls will only\n";
+				print "score if their genotype is DIFFERENT to the single case\n\n";
+	
+				&pause;
+			}
 			$only_one_case = "true";
 		}
 
@@ -1772,49 +1816,51 @@ while ($vcf_line = <VCF>)
 		# Recalculate the number of samples                            #
 		################################################################
 		$no_of_samples_without_omits = $no_of_samples - $omit_count;
-
-		if ($omit_count == 1)
-		{
-			print "\nNo of samples to be used: $no_of_samples_without_omits  ($omit_count sample omitted)\n\n"
+		
+		if (!$default){
+			if ($omit_count == 1){
+				print "\nNo of samples to be used: $no_of_samples_without_omits  ($omit_count sample omitted)\n\n";
+			}
+			elsif ($omit_count > 1){
+				print "\nNo of samples to be used: $no_of_samples_without_omits  ($omit_count samples omitted)\n\n";
+			}
+	
+			print "\n\t>>PLEASE CHECK THESE CAREFULLY.  If they look correct, press 'RETURN'\n";
+			$answer=<STDIN>;
 		}
-		if ($omit_count > 1)
-		{
-			print "\nNo of samples to be used: $no_of_samples_without_omits  ($omit_count samples omitted)\n\n"
-		}
-
-		print "\n\t>>PLEASE CHECK THESE CAREFULLY.  If they look correct, press 'RETURN'\n";
-		$answer=<STDIN>;
 		
 
 		################################################################
 		# Ask about what the segregation score for filtering should be #
 		################################################################
-		&print_message("Choose minimum segregation score for filtering","input");
+		$answer = "";
+		
+		if (!$default){
+			&print_message("Choose minimum segregation score for filtering","input");
+	
+			$minimum_segregation_score = $no_of_samples_without_omits - 1;
+			$max_seg_score = $no_of_samples_without_omits;
+			$second_seg_score = $no_of_samples_without_omits - 1;
+			$third_seg_score = $no_of_samples_without_omits - 2;
 
-		$minimum_segregation_score = $no_of_samples_without_omits - 1;
-		$max_seg_score = $no_of_samples_without_omits;
-		$second_seg_score = $no_of_samples_without_omits - 1;
-		$third_seg_score = $no_of_samples_without_omits - 2;
+			print "There are $no_of_samples_without_omits samples.";
+			print "\tThe maximum segregation score is therefore $no_of_samples_without_omits\n\n";
+	
+			print "Enter the value for the minimum segregation score allowed into the filtered output file? (DEFAULT = $second_seg_score)\n\n";
+			print "(i.e. segregation scores below this are not written to the filtered file):  ";
+	
+			$answer=<STDIN>;
+			chomp $answer;
+		}
 
-		print "There are $no_of_samples_without_omits samples.";
-		print "\tThe maximum segregation score is therefore $no_of_samples_without_omits\n\n";
-
-		print "Enter the value for the minimum segregation score allowed into the filtered output file? (DEFAULT = $second_seg_score)\n\n";
-		print "(i.e. segregation scores below this are not written to the filtered file):  ";
-
-		$answer=<STDIN>;
-		chomp $answer;
-
-		if  ($answer ne "")
-		{
+		if  ($answer ne ""){
 			if (($answer <=$no_of_samples_without_omits) && ($answer > 0)){$minimum_segregation_score = $answer}
 		}
-		if  ($answer eq "")
-		{
+		elsif  ($answer eq ""){
 			$minimum_segregation_score = $second_seg_score;
 		}
 
-		print "\n\nMinimum segregation score = $minimum_segregation_score\n\n";
+		print "\nMinimum segregation score = $minimum_segregation_score\n";
 
 	
 		
@@ -1823,49 +1869,53 @@ while ($vcf_line = <VCF>)
 		################################################################
 		&print_message("Choose minimum effect score for the filtered file","input");
 
-		$minimum_effect_score = 3;
+		#$minimum_effect_score = 3;
 
-		print "Effect scores below this minimum are NOT written to the filtered output file\n\n";
-		print "The default is to keep all SNPs with an effect score of 2 or greater.";
-		print "You can increase this if you want to make the output filtered file smaller.\n\n";
-		print "The maximum possible effect score is 5 so the highest minimum effect score is 5.\n\n";
+		$answer = "";
+		if (!$default){
+			print "Effect scores below this minimum are NOT written to the filtered output file\n\n";
+			print "The default is to keep all SNPs with an effect score of 2 or greater.";
+			print "You can increase this if you want to make the output filtered file smaller.\n\n";
+			print "The maximum possible effect score is 5 so the highest minimum effect score is 5.\n\n";
+	
+			print "Enter the value for the minimum effect score allowed into the filtered output file? (DEFAULT = $minimum_effect_score)\n\n";
+			
+			$answer=<STDIN>;
+			chomp $answer;
+		}
 
-		print "Enter the value for the minimum effect score allowed into the filtered output file? (DEFAULT = $minimum_effect_score)\n\n";
-		
-		$answer=<STDIN>;
-		chomp $answer;
-
-		if  ($answer ne "")
-		{
+		if  ($answer ne ""){
 			if (($answer <=5) && ($answer > 0)){$minimum_effect_score = $answer}
 		}
-		if  ($answer eq "")
-		{
+		elsif  ($answer eq ""){
 			$minimum_effect_score = $minimum_effect_score; #default
 		}
 
-		print "\n\nMinimum effect score = $minimum_effect_score\n\n";
+		print "Minimum effect score = $minimum_effect_score\n";
 
 
 
 		################################################################
 		# Ask what you want to do with unscored genotypes ('XX')       #
 		################################################################
-		&print_message("How do you want score ungenotyped variants ('XX')?","input");
-
-		print "There are three methods to do this.\n\n";
-		
-		print "The old method was to score them all as the Reference allele.\n\n";
-		print "This is good because that is the allele they are most likely to be, but is bad because\n";
-		print "you might miss a really good segregation because of one un-genotyped variant in one sample.\n\n";
-		print "I suggest you start with method 1, and then maybe try the others as an alternative if you like.\n\n";
-
-		print "   <1> Score 'XX' genotypes as two Reference alleles.                                [DEFAULT]\n";
-		print "   <2> Score 'XX' genotypes as whatever will give the best segregation score.   \n";
-		print "   <3> Don't score 'XX' genotypes at all, but then normalise the segregation score to compensate for the missing data.\n\n";
-
-
-		$answer=<STDIN>; chomp $answer;
+		$answer = 1;
+		if (!$default){
+			&print_message("How do you want score ungenotyped variants ('XX')?","input");
+	
+			print "There are three methods to do this.\n\n";
+			
+			print "The old method was to score them all as the Reference allele.\n\n";
+			print "This is good because that is the allele they are most likely to be, but is bad because\n";
+			print "you might miss a really good segregation because of one un-genotyped variant in one sample.\n\n";
+			print "I suggest you start with method 1, and then maybe try the others as an alternative if you like.\n\n";
+	
+			print "   <1> Score 'XX' genotypes as two Reference alleles.                                [DEFAULT]\n";
+			print "   <2> Score 'XX' genotypes as whatever will give the best segregation score.   \n";
+			print "   <3> Don't score 'XX' genotypes at all, but then normalise the segregation score to compensate for the missing data.\n\n";
+	
+	
+			$answer=<STDIN>; chomp $answer;
+		}
 
 		# Default is 1
 		if ($answer eq ""){$answer = "1"}
@@ -2345,7 +2395,7 @@ close OUT_FILTERED; # close filtered out file for excel
 
 if ($make_merged_indels_file eq "true"){ close INDELS_OUTPUT; }
 
-print "\n\n";
+print "\n\n" unless $default;
 
 
 ############################################################################
@@ -2712,45 +2762,45 @@ sub ask_about_dealing_with_missing_genotypes
 #############################################
 sub ask_about_extra_columns
 {
-	if ($effect_predictor eq "snpEff")
-	{
-		&print_message("Do you want these extra columns of snpEff data?","input");
+	$answer = "";
+	if (!$default){
+		if ($effect_predictor eq "snpEff"){
+			&print_message("Do you want these extra columns of snpEff data?","input");
+	
+			print "\tsnpEff base change data       \te.g. c.2022C>A\n";
+			print "\tsnpEff amino acid change data \te.g. p.Asp674Glu\n";
+			print "\tsnpEff CDS position data      \te.g. 2022/2922\n";
+			print "\tsnpEff protein position data  \te.g. 674/973\n\n";
+	
+			print "   <1> Yes. Include extra snpEff data. \n";
+			print "   <2> No.  Don't include extra data.             [DEFAULT]\n\n";
+	
+		}
 
-		print "\tsnpEff base change data       \te.g. c.2022C>A\n";
-		print "\tsnpEff amino acid change data \te.g. p.Asp674Glu\n";
-		print "\tsnpEff CDS position data      \te.g. 2022/2922\n";
-		print "\tsnpEff protein position data  \te.g. 674/973\n\n";
+		if ($effect_predictor eq "VEP"){
+			&print_message("Do you want these extra columns of VEP data?","input");
+	
+			print "\tVEP base change data        \te.g. cCc/cAc\n";
+			print "\tVEP amino acid change data  \te.g. P/H\n";
+			print "\tVEP CDS position data       \te.g. 2022\n";
+			print "\tVEP protein position data   \te.g. 674\n\n";
+	
+			print "   <1> Yes. Include extra VEP data. \n";
+			print "   <2> No.  Don't include extra data.             [DEFAULT]\n\n";
 
-		print "   <1> Yes. Include extra snpEff data. \n";
-		print "   <2> No.  Don't include extra data.             [DEFAULT]\n\n";
-
+		}
+	
+		$answer = <STDIN>;
+		chomp $answer;
+	
 	}
-
-	if ($effect_predictor eq "VEP")
-	{
-		&print_message("Do you want these extra columns of VEP data?","input");
-
-		print "\tVEP base change data        \te.g. cCc/cAc\n";
-		print "\tVEP amino acid change data  \te.g. P/H\n";
-		print "\tVEP CDS position data       \te.g. 2022\n";
-		print "\tVEP protein position data   \te.g. 674\n\n";
-
-		print "   <1> Yes. Include extra VEP data. \n";
-		print "   <2> No.  Don't include extra data.             [DEFAULT]\n\n";
-
-	}
-
-	$answer = <STDIN>;
-	chomp $answer;
 	
 	if ($answer eq ""){$answer = "2"} # Default
 
-	if (substr($answer,0,1) eq "1" )
-	{
+	if (substr($answer,0,1) eq "1" ){
 		$include_base_change_info = "true";  # Include  base change position details in the output file
 	}
-	if (substr($answer,0,1) eq "2" )
-	{
+	if (substr($answer,0,1) eq "2" ){
 		$include_base_change_info = "false";  # Include  base change position details in the output file
 	}
 } # ask_about_extra_columns
@@ -2769,15 +2819,18 @@ sub load_existing_snp_list
 
 	if ($check_snp_list eq "yes")
 	{
-		&print_message("Which reference sequence do you want to use?","input");
-
-		print "   <1> CanFam3\n";
-		print "   <2> EquCab2\n";
-		print "   <3> Cat\n";
-		print "   <4> Human\n\n";
-
-		$answer=<STDIN>;
-		chomp $answer;
+		$answer = "";
+		if (!$default){
+			&print_message("Which reference sequence do you want to use?","input");
+	
+			print "   <1> CanFam3 [DEFAULT]\n";
+			print "   <2> EquCab2\n";
+			print "   <3> Cat\n";
+			print "   <4> Human\n\n";
+	
+			$answer=<STDIN>;
+			chomp $answer;
+		}
 
 		if ($answer eq ""){$answer="1"} # DEFAULT
 
@@ -2988,6 +3041,8 @@ sub check_vcf_header_lines
 			# Check that all field order positions have been detected #
 			###########################################################
 			&print_message("VEP annotations detected","message");
+			
+			if (!$default){
 
 			print "   This is the detected order of the data in the VEP 'CSQ' field\n\n";
 			print "   IMPACT_field_order:           \t$IMPACT_field_order\n";
@@ -3002,6 +3057,7 @@ sub check_vcf_header_lines
 			print "   >> NOTE:  If any of these are zero then the data will not be detected and transferred to the output file.\n\n";
 
 			&pause;
+			}
 
 		} # if (index($vcf_line,"#INFO=<ID=CSQ") > -1)
 
@@ -3255,9 +3311,7 @@ sub get_data_from_VCF_INFO_field
 					if ($vep_items_array_size > 13) {$vep_protein_position = $vep_items_array[$Protein_position_field_order];} else {$vep_protein_position = ""}
 
 					$vep_sift_prediction = "";
-					if ($vep_items_array_size > 29) {$vep_sift_prediction = $vep_items_array[$SIFT_field_order]} else {$vep_sift_prediction = ""}
-
-
+					if ($vep_items_array_size > 29 && defined($vep_items_array[$SIFT_field_order])) {$vep_sift_prediction = $vep_items_array[$SIFT_field_order]} else {$vep_sift_prediction = ""}
 
 					###################################################
 					# Try to look up real name from ensembl gene name #
@@ -5339,12 +5393,10 @@ sub get_prefix
 	my $filename = "";
 
 	$filename = $_[0];
-	if (index($filename,".") > 0)
-	{
+	if (index($filename,".") > 0){
 		$filename = substr($filename, 0, index($filename,"."));
 	}
-	if (index($filename,".") == -1)
-	{
+	if (index($filename,".") == -1){
 		$filename = $filename;
 	}
 }
@@ -5553,6 +5605,9 @@ sub show_segregation_scores
 
 sub print_message
 {
+	
+	if ($default){ return; }
+	
 	my $message_length 	= "";
 	my $pos_count		= 0;
 	my $char			= "";
@@ -5593,7 +5648,7 @@ sub print_both
 {
 	my $message = $_[0];
 
-	print "$message";
+	print "$message" unless $default;
 	print COMMAND_LOG "$message";
 }
 
@@ -6123,7 +6178,7 @@ sub check_vcf_format
 		&print_message(" File format check  ","message");
 		if (index($vcf_line,"VCF") > -1)
 		{
-			print "   First line is $vcf_line.  This looks like a VCF file\n\n";
+			print "   First line is $vcf_line.  This looks like a VCF file\n\n" unless $default;
 		}	
 		else
 		{
@@ -6881,7 +6936,16 @@ sub merge_indels
 ###########################################################
 sub check_VCF_file
 {
-	open (VCF_TEMPORARY, "$vcf_file") || die "Cannot open $vcf_file";
+	#open (VCF_TEMPORARY, "$vcf_file") || die "Cannot open $vcf_file";
+	
+	if ($vcf_file =~ /gz$/){
+		open(VCF_TEMPORARY, "gunzip -c $vcf_file |") or die "gunzip -c $vcf_file: $!";
+	}
+	else{
+		open (VCF_TEMPORARY, "$vcf_file") || die "Cannot open $vcf_file";
+	}
+	
+	
 	$line_count = 0;
 	$vep_line_count = 1;
 	$passed_header_lines = "false";
@@ -7002,15 +7066,16 @@ sub read_disease_status_file
 	############################################
 	# Show user a list of the disease statuses #
 	############################################
-	&print_message ("List of samples and disease statuses","message");
-	print "\n";
-
-	for ($disease_status_count = 1;$disease_status_count <=$no_samples_in_status_file; $disease_status_count++)
-	{
-		# pad out sample name to max_sample_name_length characters + 2
-		$sample_name = sprintf("%-*s", $max_sample_name_length + 2, $disease_status_sample_array[$disease_status_count]);
-
-		print "\t$disease_status_count\t$sample_name\t$disease_status_array[$disease_status_count]\n";
+	if (!$default){
+		&print_message ("List of samples and disease statuses\n","message");
+	
+		for ($disease_status_count = 1;$disease_status_count <=$no_samples_in_status_file; $disease_status_count++)
+		{
+			# pad out sample name to max_sample_name_length characters + 2
+			$sample_name = sprintf("%-*s", $max_sample_name_length + 2, $disease_status_sample_array[$disease_status_count]);
+	
+			print "\t$disease_status_count\t$sample_name\t$disease_status_array[$disease_status_count]\n";
+		}
 	}
 	
 	if ($no_samples_in_status_file != $no_of_samples)
@@ -7068,7 +7133,7 @@ sub read_disease_status_file
 		exit;
 	}
 
-	if ($total_match_count == $no_of_samples)
+	if ($total_match_count == $no_of_samples && !$default)
 	{
 		print "\n\t>>If these samples and disease statuses look correct, press 'RETURN' ";
 		$answer=<STDIN>;
@@ -7087,23 +7152,26 @@ sub read_disease_status_file
 ############################################################
 sub get_name_of_output_files
 {
-	$prefix = &get_prefix ($vcf_file);
-	$prefix_disease_status_file = &get_prefix($disease_status_file);
+	$prefix = &get_prefix (basename($vcf_file));
+	$prefix_disease_status_file = &get_prefix(basename($disease_status_file));
 	$answer = "n";
 
 	until ($answer eq "y")
 	{
-		&print_message("Type a prefix that will identify the output files","message");
-
-		print "The input VCF file is:      \t$vcf_file\n";
-		print "The disease status file is: \t$disease_status_file\n\n";
-
-		print "Choose file prefix:    [DEFAULT = $prefix"."_".$prefix_disease_status_file."]\n\n";
-
-		print "> ";
-
-		$run_title = <STDIN>;
-		chomp $run_title;
+		$run_title = $prefix."_".$prefix_disease_status_file;
+		if (!$default){
+			&print_message("Type a prefix that will identify the output files","message");
+	
+			print "The input VCF file is:      \t$vcf_file\n";
+			print "The disease status file is: \t$disease_status_file\n\n";
+	
+			print "Choose file prefix:    [DEFAULT = $prefix"."_".$prefix_disease_status_file."]\n\n";
+	
+			print "> ";
+	
+			$run_title = <STDIN>;
+			chomp $run_title;
+		}
 
 		if ($run_title eq ""){$run_title = $prefix."_".$prefix_disease_status_file}
 
@@ -7125,10 +7193,13 @@ sub get_name_of_output_files
 		$missing_effects = 					$run_title."_vcf2excel_missing_effects.out";
 
 		print "\nOutput file for Excel: \t$output_file\n\n";
+		$answer = "y";
 
-		print "Is this output prefix OK? (y/n)         ";
-		$answer=<STDIN>;
-		chomp $answer;
+		if (!$default){
+			print "Is this output prefix OK? (y/n)         ";
+			$answer=<STDIN>;
+			chomp $answer;
+		}
 
 		# Default is y
 		if ($answer eq "") {$answer = "y"}
