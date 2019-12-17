@@ -1834,14 +1834,14 @@ while ($vcf_line = <VCF>)
 		# Ask about what the segregation score for filtering should be #
 		################################################################
 		$answer = "";
+	
+		$minimum_segregation_score = $no_of_samples_without_omits - 1;
+		$max_seg_score = $no_of_samples_without_omits;
+		$second_seg_score = $no_of_samples_without_omits - 1;
+		$third_seg_score = $no_of_samples_without_omits - 2;
 		
 		if (!$default){
 			&print_message("Choose minimum segregation score for filtering","input");
-	
-			$minimum_segregation_score = $no_of_samples_without_omits - 1;
-			$max_seg_score = $no_of_samples_without_omits;
-			$second_seg_score = $no_of_samples_without_omits - 1;
-			$third_seg_score = $no_of_samples_without_omits - 2;
 
 			print "There are $no_of_samples_without_omits samples.";
 			print "\tThe maximum segregation score is therefore $no_of_samples_without_omits\n\n";
