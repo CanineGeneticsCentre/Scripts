@@ -1837,7 +1837,7 @@ while ($vcf_line = <VCF>)
 	
 		$minimum_segregation_score = $no_of_samples_without_omits - 1;
 		$max_seg_score = $no_of_samples_without_omits;
-		$second_seg_score = $no_of_samples_without_omits - 1;
+		$second_seg_score = ($second_seg_score > 0) ? $second_seg_score : $no_of_samples_without_omits - 1;
 		$third_seg_score = $no_of_samples_without_omits - 2;
 		
 		if (!$default){
