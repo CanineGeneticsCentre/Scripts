@@ -354,7 +354,7 @@ while (($gene_search_short_name, $value) = each %gene_hash)
 	########################################
 	# Use wget with API key to create file #
 	########################################
-	&run_unix_command("wget \"http://api.omim.org/api/entry/search?search=$gene_search_short_name&start=0&limit=20&apiKey=$API_key\"  -q -O $gene_output_file","no_print");
+	&run_unix_command("wget \"https://api.omim.org/api/entry/search?search=$gene_search_short_name&start=0&limit=20&apiKey=$API_key\"  -q -O $gene_output_file", "no_print");
 
 
 	#wget "http://api.omim.org/api/entry/search?search=duchenne&start=0&limit=20&apiKey=ED9CB85D8738D707FFCDEF22CD3D3DD0E3455A5A"
@@ -1025,7 +1025,7 @@ sub pause
 	my $_answer = "";
 	print "\n Press RETURN to continue\n";
 	$_answer=<STDIN>;
-}
+}
 
 
 sub read_retnet_gene_list
