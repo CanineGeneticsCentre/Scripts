@@ -6,6 +6,7 @@ use Data::Dumper;
 
 open IN, $ARGV[0] or die "Unable to open $ARGV[0]\n";
 
+my $source  = (defined($ARGV[1]) && $ARGV[1] ne '') ? $ARGV[1] : "Ensembl Genes";
 my %trans_hash = ();
 my %gene_names = ();
 my @exon_starts = ();
@@ -14,16 +15,16 @@ my $previous_trans = '';
 
 my %biotype_colors = (
 	lincRNA => '255,128,14',
-	miRNA => '0,0,0',
-	misc_RNA => '0,0,0',
-	Mt_rRNA => '0,0,0',
-	Mt_tRNA => '0,0,0',
+	#miRNA => '0,0,0',
+	#misc_RNA => '0,0,0',
+	#Mt_rRNA => '0,0,0',
+	#Mt_tRNA => '0,0,0',
 	processed_pseudogene => '128,128,128',
 	protein_coding => '31,119,180',
 	pseudogene => '128,128,128',
-	rRNA => '0,0,0',
-	snoRNA => '0,0,0',
-	snRNA => '0,0,0',
+	#rRNA => '0,0,0',
+	#snoRNA => '0,0,0',
+	#snRNA => '0,0,0',
 );
 
 
@@ -37,13 +38,12 @@ while(<IN>){
 		$atts{$k} = $v;
 	}
 	
-	if ($term eq 'gene'){
+	if ($term eq 'gene' || $term eq 'transcript'){
 		my $gene_id = $atts{gene_id};
 		my $gene_name = defined $atts{gene_name} ? $atts{gene_name} : $gene_id;
 		$gene_names{$gene_id} = $gene_name;
-		next;
+		next if $term eq 'gene';
 	}
-		
 	
 	my $transcript_id = $atts{transcript_id};
 	
@@ -76,10 +76,12 @@ while(<IN>){
 		}
 		my $gene_name = $gene_names{$atts{gene_id}};
 		my $biotype = defined $atts{gene_biotype} ? $atts{gene_biotype} : "";
+		my $color = defined $biotype_colors{$biotype} ? $biotype_colors{$biotype} : "0,0,0";
 		$trans_hash{$transcript_id} = {
 			id			=> $transcript_id,
 			name		=> $gene_name,
 			biotype		=> $biotype,
+			color		=> $color,
 			chr			=> $chr,
 			start		=> $start,
 			stop		=> $stop,
@@ -97,9 +99,9 @@ $trans_hash{$previous_trans}{exon_starts} = join(',', @exon_starts);
 $trans_hash{$previous_trans}{exon_lengths} = join(',', @exon_lengths);
 $trans_hash{$previous_trans}{exon_count} = scalar @exon_lengths;
 
-print "#Ensembl Genes\n";
+print "#".$source ."\n";
 foreach my $tc_id (keys %trans_hash){
-	print join ("\t", $trans_hash{$tc_id}{chr}, ($trans_hash{$tc_id}{start}-1), $trans_hash{$tc_id}{stop}, $trans_hash{$tc_id}{name}, 0, $trans_hash{$tc_id}{strand}, $trans_hash{$tc_id}{tc_start}, $trans_hash{$tc_id}{tc_stop}, $biotype_colors{$trans_hash{$tc_id}{biotype}}, $trans_hash{$tc_id}{exon_count}, $trans_hash{$tc_id}{exon_lengths}, $trans_hash{$tc_id}{exon_starts})."\n";
+	print join ("\t", $trans_hash{$tc_id}{chr}, ($trans_hash{$tc_id}{start}-1), $trans_hash{$tc_id}{stop}, $trans_hash{$tc_id}{name}, 0, $trans_hash{$tc_id}{strand}, $trans_hash{$tc_id}{tc_start}, $trans_hash{$tc_id}{tc_stop}, $trans_hash{$tc_id}{color}, $trans_hash{$tc_id}{exon_count}, $trans_hash{$tc_id}{exon_lengths}, $trans_hash{$tc_id}{exon_starts})."\n";
 }
 
 open (GENES, ">ensembl_gene_names.txt") or die "Unable to open file ensembl_gene_names.txt\n";
@@ -109,3 +111,4 @@ foreach my $id (keys %gene_names){
 	}
 }
 close GENES;
+
