@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENS=93
+ENS=102
 mkdir ensembl_v${ENS}
 cd ensembl_v${ENS}
 
