@@ -27,10 +27,16 @@ zcat download/Canis_familiaris.CanFam3.1.dna_sm.chromosome.MT.fa >> canfam3.fast
 zcat download/Canis_familiaris.CanFam3.1.dna_sm.chromosome.X.fa >> canfam3.fasta
 zcat download/Canis_familiaris.CanFam3.1.dna_sm.nonchromosomal.fa.gz >> canfam3.fasta
 
+module load samtools
 samtools faidx canfam3.fasta; 
+
+module load bwa
 /opt/bwa/bwa index -a bwtsw canfam3.fasta
+
 #CreateSequenceDictionary REFERENCE=canfam3.fasta OUTPUT=canfam3.fasta.dict
-java -jar /opt/picard/CreateSequenceDictionary.jar REFERENCE=canfam3.fasta OUTPUT=canfam3.fasta.dict
+#java -jar /opt/picard/CreateSequenceDictionary.jar REFERENCE=canfam3.fasta OUTPUT=canfam3.fasta.dict
+module load picard/2.9.2
+picard_latest CreateSequenceDictionary REFERENCE=canfam3.fasta OUTPUT=canfam3.fasta.dict
 
 #Genes
 gunzip download/Canis_familiaris.CanFam3.1.${ENS}.gtf.gz
