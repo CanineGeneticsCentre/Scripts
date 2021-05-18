@@ -6,6 +6,7 @@ use Data::Dumper;
 
 open IN, $ARGV[0] or die "Unable to open $ARGV[0]\n";
 
+my $source  = (defined($ARGV[1]) && $ARGV[1] ne '') ? $ARGV[1] : "Ensembl Genes";
 my %trans_hash = ();
 my %gene_names = ();
 my @exon_starts = ();
@@ -37,13 +38,12 @@ while(<IN>){
 		$atts{$k} = $v;
 	}
 	
-	if ($term eq 'gene'){
+	if ($term eq 'gene' || $term eq 'transcript'){
 		my $gene_id = $atts{gene_id};
 		my $gene_name = defined $atts{gene_name} ? $atts{gene_name} : $gene_id;
 		$gene_names{$gene_id} = $gene_name;
-		next;
+		next if $term eq 'gene';
 	}
-		
 	
 	my $transcript_id = $atts{transcript_id};
 	
@@ -99,7 +99,7 @@ $trans_hash{$previous_trans}{exon_starts} = join(',', @exon_starts);
 $trans_hash{$previous_trans}{exon_lengths} = join(',', @exon_lengths);
 $trans_hash{$previous_trans}{exon_count} = scalar @exon_lengths;
 
-print "#Ensembl Genes\n";
+print "#".$source ."\n";
 foreach my $tc_id (keys %trans_hash){
 	print join ("\t", $trans_hash{$tc_id}{chr}, ($trans_hash{$tc_id}{start}-1), $trans_hash{$tc_id}{stop}, $trans_hash{$tc_id}{name}, 0, $trans_hash{$tc_id}{strand}, $trans_hash{$tc_id}{tc_start}, $trans_hash{$tc_id}{tc_stop}, $trans_hash{$tc_id}{color}, $trans_hash{$tc_id}{exon_count}, $trans_hash{$tc_id}{exon_lengths}, $trans_hash{$tc_id}{exon_starts})."\n";
 }
@@ -111,3 +111,4 @@ foreach my $id (keys %gene_names){
 	}
 }
 close GENES;
+
