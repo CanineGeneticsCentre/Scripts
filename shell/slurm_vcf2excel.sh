@@ -14,6 +14,8 @@ then
   exit 1;
 fi
 
+dos2unix ${DISEASE_STATUS}
+
 sbatch <<EOT
 #!/bin/bash
 
