@@ -35,6 +35,9 @@ sbatch <<EOT
 
 #SBATCH -o $HOME/rds/hpc-work/logs/job-%A_%a.out
 
+module purge                                      # Removes all modules still loaded
+module load rhel7/default-peta4                   # REQUIRED - loads the basic environment
+
 module load bcftools-1.9-gcc-5.4.0-b2hdt5n        # bcftools
 module load tabix-2013-12-16-gcc-5.4.0-xn3xiv7    # bgzip/tabix
 
