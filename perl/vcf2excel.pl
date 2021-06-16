@@ -6245,10 +6245,10 @@ sub read_vcf_first_seven_columns
 	#################################################################
 	# Convert chrX to relevant number (e.g. chrX --> chr39 for dog) #
 	#################################################################
-	if ($chromosome eq "X")
-	{
-		$chromosome = $x_chromosome_number;
-	}
+	#if ($chromosome eq "X")
+	#{
+	#	$chromosome = $x_chromosome_number;
+	#}
 	
 	####################################################################
     # Make joint chromosome and position to check if it is on SNP list #
