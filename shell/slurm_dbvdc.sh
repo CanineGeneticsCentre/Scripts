@@ -5,11 +5,14 @@
 DBVDC='/rds/project/rds-Qr3fy2NTCy0/Data/Downloads/dbvdc.648.vars.ann.vcf.gz';
 SNPS=$1
 
+[[ -z "$SNPS" ]] && { echo "ERROR: No file of SNP positions provided for this run"; exit 1; }
 if [ ! -e $SNPS ]
 then 
   echo "ERROR - Unable to find file of SNP positions to test - ${SNPS}";
   exit 1;
 fi
+
+dos2unix ${SNPS}
 
 sbatch <<EOT
 #!/bin/bash
