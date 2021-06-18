@@ -31,16 +31,17 @@ while (<IN>){
     my $ref_base = $cols[2];
     my $alt_base = $cols[3];
 
-    print join("\t", splice(@cols, 0, 4));
+    print OUT join("\t", splice(@cols, 0, 4));
 
-    foreach my $gt (splice(@cols, 5)){
+    #foreach my $gt (splice(@cols, 5)){
+    foreach my $gt (@cols){
       $gt =~ s/0/$ref_base/g;
       $gt =~ s/1/$alt_base/g;
       $gt =~ s/\./X/g;
       $gt =~ s/\//\t/g;
-      print "\t".$gt;
+      print OUT "\t".$gt;
     }
-    print "\n";
+    print OUT "\n";
   }
   else{
     # No result for the CHR:POS
