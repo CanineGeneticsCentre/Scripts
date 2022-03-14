@@ -13,7 +13,7 @@ CHR=$2
 GENOME='canfam3';
 
 
-echo -n "Which genome do you want to use? "
+echo "Which genome do you want to use? "
 echo "\t1. CanFam3 [default]"
 echo "\t2. CanFam4"
 echo;
@@ -27,7 +27,7 @@ fi
 
 
 
-VCF_DIR='/rds/project/rds-Qr3fy2NTCy0/Data/VCF/${GENOME}/';
+VCF_DIR="/rds/project/rds-Qr3fy2NTCy0/Data/VCF/${GENOME}/";
 
 echo $VCF_DIR;
 exit;
@@ -58,13 +58,13 @@ sbatch <<EOT
 #SBATCH --time 02:00:00
 #SBATCH --mail-type=ALL
 #SBATCH -p skylake
-#SBATCH --array 1-41
+##SBATCH --array 1-41
 
 #SBATCH -o $HOME/rds/hpc-work/logs/job-%A_%a.out
 
 module purge                               # Removes all modules still loaded
 module load rhel7/default-peta4            # REQUIRED - loads the basic environment
 
-perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF}/vcf_chr/ens_WGS_219-chr\${SLURM_ARRAY_TASK_ID}.vcf.gz --status_file ${DISEASE_STATUS}
+perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF_FILE} --status_file ${DISEASE_STATUS}
 EOT
 
