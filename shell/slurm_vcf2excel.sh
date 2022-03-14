@@ -1,15 +1,40 @@
 #!/bin/bash
 
-## Command to Run :  bash slurm_vcf2excel.sh <Disease Status File>
+## Command to Run :  bash slurm_vcf2excel.sh <Disease Status File> <CHR>
 
-VCF_FILE='/rds/project/rds-Qr3fy2NTCy0/Data/ens_WGS_219_VEP.vcf.gz'
+#VCF_FILE='/rds/project/rds-Qr3fy2NTCy0/Data/ens_WGS_219_VEP.vcf.gz'
 DISEASE_STATUS=$1
+CHR=$2
 #SEG_SCORE=$2
 #EFFECT_SCORE=1
 
-VCF=`dirname $VCF_FILE`
+#VCF=`dirname $VCF_FILE`
+
+GENOME='canfam3';
+
+
+echo -n "Which genome do you want to use? "
+echo "\t1. CanFam3 [default]"
+echo "\t2. CanFam4"
+echo;
+# Assign input value into a variable
+read answer
+
+if (( $answer == "2" ))
+then
+    GENOME='canfam4';
+fi
+
+
+
+VCF_DIR='/rds/project/rds-Qr3fy2NTCy0/Data/VCF/${GENOME}/';
+
+echo $VCF_DIR;
+exit;
 
 [[ -z "$DISEASE_STATUS" ]] && { echo "ERROR: No disease status file provided for this run"; exit 1; }
+[[ -z "$CHR" ]] && { echo "ERROR: No chromosome speficied for this run"; exit 1; }
+
 if [ ! -e $VCF_FILE ]; then 
   echo "ERROR - Unable to find VCF file. Please check and try again - ${VCF_FILE}";
   exit 1;
