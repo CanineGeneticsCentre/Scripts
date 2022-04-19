@@ -4,43 +4,47 @@
 
 #VCF_FILE='/rds/project/rds-Qr3fy2NTCy0/Data/ens_WGS_219_VEP.vcf.gz'
 DISEASE_STATUS=$1
-CHR=$2
+#CHR=$2
 #SEG_SCORE=$2
 #EFFECT_SCORE=1
 
 #VCF=`dirname $VCF_FILE`
 
+#VCF='/rds/project/rds-Qr3fy2NTCy0/Data/VCF/'
 GENOME='canfam3';
 REF='cf3';
-
-printf "Which genome do you want to use?\n"
-printf "\t1. CanFam3 [default]\n"
-printf "\t2. CanFam4\n"
-# Assign input value into a variable
-read answer
-
-if [[ -v $answer && $answer == "2" ]]; then
-    GENOME='canfam4';
-    REF='cf4';
-fi
-
+FASTA="/rds/project/rds-Qr3fy2NTCy0/Genomes/CanFam3.1/current"
 VCF_DIR="/rds/project/rds-Qr3fy2NTCy0/Data/VCF/${GENOME}";
 
+#printf "Which genome do you want to use?\n"
+#printf "\t1. CanFam3 [default]\n"
+#printf "\t2. CanFam4\n"
+# Assign input value into a variable
+#read answer
+
+#if [[ -v $answer && $answer == "2" ]]; then
+#    GENOME='canfam4';
+#    REF='cf4';
+#fi
+
+
 [[ -z "$DISEASE_STATUS" ]] && { echo "ERROR: No disease status file provided for this run"; exit 1; }
-[[ -z "$CHR" ]] && { echo "ERROR: No chromosome speficied for this run"; exit 1; }
+#[[ -z "$CHR" ]] && { echo "ERROR: No chromosome speficied for this run"; exit 1; }
 
-VCF_FILE="${VCF_DIR}/${REF}-chr${CHR}.vcf.gz";
+#VCF_FILE="${VCF_DIR}/${REF}-chr${CHR}.vcf.gz";
 
-if [ ! -e $VCF_FILE ]; then 
-  echo "ERROR - Unable to find VCF file. Please check and try again - ${VCF_FILE}";
-  exit 1;
-fi
-
-#count=`ls ${VCF}/vcf_chr/*.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
-#if [ $count != 41 ]; then
-#  echo "ERROR - Unable to find chromosome specific VCF files. Please check and try again - ${VCF}";
+#if [ ! -e $VCF_FILE ]; then 
+#  echo "ERROR - Unable to find VCF file. Please check and try again - ${VCF_FILE}";
 #  exit 1;
 #fi
+
+#count=`ls ${VCF}/vcf_chr/*.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
+#count=`ls ${VCF}/vcf_chr/ens_WGS*.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
+count=`ls ${VCF_DIR}/${REF}-chr*.ann.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
+if [ $count != 41 ]; then
+  echo "ERROR - Unable to find chromosome specific VCF files. Please check and try again - ${VCF}";
+  exit 1;
+fi
 
 dos2unix ${DISEASE_STATUS}
 
@@ -54,13 +58,20 @@ sbatch <<EOT
 #SBATCH --time 02:00:00
 #SBATCH --mail-type=ALL
 #SBATCH -p skylake
-##SBATCH --array 1-41
+#SBATCH --array 1-41
 
 #SBATCH -o $HOME/rds/hpc-work/logs/job-%A_%a.out
 
 module purge                               # Removes all modules still loaded
 module load rhel7/default-peta4            # REQUIRED - loads the basic environment
 
-perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF_FILE} --status_file ${DISEASE_STATUS}
+
+CHR=`cut -f 1 -d':' ${FASTA}/${REF}-genomicsDB.intervals | cut -f 1 -d' ' | cut -d'_' -f 1 | sort -n | uniq | head -\${SLURM_ARRAY_TASK_ID} | tail -1`
+
+#perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF_FILE} --status_file ${DISEASE_STATUS}
+#perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF}/vcf_chr/ens_WGS_219-chr\${SLURM_ARRAY_TASK_ID}.vcf.gz --status_file ${DISEASE_STATUS}
+
+echo "perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF_DIR}/${REF}-chr\${CHR}.ann.vcf.gz --status_file ${DISEASE_STATUS}"
+perl /rds/project/rds-Qr3fy2NTCy0/Software/Git/Scripts/perl/vcf2excel.pl --default --vcf ${VCF_DIR}/${REF}-chr\${CHR}.ann.vcf.gz --status_file ${DISEASE_STATUS}
 EOT
 
