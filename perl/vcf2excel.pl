@@ -299,21 +299,21 @@ my $no_omit_samples					= 0;
 my $no_samples_in_status_file		= 0;
 
 #Scores
-my $minimum_segregation_score		= 0;
-my $max_seg_score					= 0;
+my $minimum_segregation_score			= 0;
+my $max_seg_score				= 0;
 my $second_seg_score				= 0;
-my $third_seg_score					= 0;
-my $minimum_effect_score			= 3;
-my $effect_score					= 0;
+my $third_seg_score				= 0;
+my $minimum_effect_score			= 1;
+my $effect_score				= 0;
 my $effect_score_check				= 0; # When checking for merged indels
 my $effect_score_merged				= 0; #
 my $vep_effect_score				= 0;
-my $vep_effect_score_ampersand_max	= 0;
+my $vep_effect_score_ampersand_max		= 0;
 my $snpEff_effect_score				= 0;
-my $snpEff_effect_score_ampersand_max= 0;
+my $snpEff_effect_score_ampersand_max		= 0;
 my $max_effect_score   				= 0; # If VEP and snpEff are both used
 my $max_vep_effect_score   			= 0;
-my $max_snpEff_effect_score   		= 0;
+my $max_snpEff_effect_score   			= 0;
 my $highest_possible_segregation_score		= 0;
 
 #Column positions
@@ -1574,9 +1574,9 @@ while ($vcf_line = <VCF>)
 		# Make sure the list file is in Unix format                #
 		############################################################
 		print "\n" unless $default;
-		$command = "dos2unix $disease_status_file";
-		system("$command");
-		print "\n" unless $default;
+		#$command = "dos2unix $disease_status_file";
+		#system("$command");
+		#print "\n" unless $default;
 
 
 		############################################################
@@ -6986,7 +6986,7 @@ sub check_VCF_file
 #######################################################################################
 sub read_disease_status_file
 {
-	open (STATUS_FILE, "$disease_status_file") || die "Cannot open $vcf_file";
+	open (STATUS_FILE, "$disease_status_file") || die "Cannot open $disease_status_file";
 	$disease_status_count = 0;
 	$affected_count_ds_file = 0;
 	$normal_count_ds_file = 0;
@@ -7158,14 +7158,16 @@ sub get_name_of_output_files
 
 	until ($answer eq "y")
 	{
-		$run_title = $prefix."_".$prefix_disease_status_file;
+		#$run_title = $prefix."_".$prefix_disease_status_file;
+		$run_title = $prefix;
 		if (!$default){
 			&print_message("Type a prefix that will identify the output files","message");
 	
 			print "The input VCF file is:      \t$vcf_file\n";
 			print "The disease status file is: \t$disease_status_file\n\n";
 	
-			print "Choose file prefix:    [DEFAULT = $prefix"."_".$prefix_disease_status_file."]\n\n";
+			#print "Choose file prefix:    [DEFAULT = $prefix"."_".$prefix_disease_status_file."]\n\n";
+			print "Choose file prefix:    [DEFAULT = $prefix]\n\n";
 	
 			print "> ";
 	
