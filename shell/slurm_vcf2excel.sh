@@ -50,4 +50,4 @@ if [ $count != 41 ]; then
 fi
 
 dos2unix ${DISEASE_STATUS}
-sbatch --export=DISEASE_STATUS=${DISEASE_STATUS},FASTA=${FASTA},VCF_DIR=${VCF_DIR},SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/vcf2excel.sh;
+echo sbatch --export=DISEASE_STATUS=${DISEASE_STATUS},FASTA=${FASTA},VCF_DIR=${VCF_DIR},SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/../slurm/vcf2excel.sh;
