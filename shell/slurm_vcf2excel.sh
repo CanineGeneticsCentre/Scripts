@@ -32,17 +32,10 @@ VCF_DIR="/rds/project/rds-Qr3fy2NTCy0/Data/VCF/${GENOME}";
 
 
 [[ -z "$DISEASE_STATUS" ]] && { echo "ERROR: No disease status file provided for this run"; exit 1; }
-#[[ -z "$CHR" ]] && { echo "ERROR: No chromosome speficied for this run"; exit 1; }
 
-#VCF_FILE="${VCF_DIR}/${REF}-chr${CHR}.vcf.gz";
+DIR=`echo $RANDOM | md5sum | head -c 10`
+mkdir -p $DIR/logs; cd $DIR
 
-#if [ ! -e $VCF_FILE ]; then 
-#  echo "ERROR - Unable to find VCF file. Please check and try again - ${VCF_FILE}";
-#  exit 1;
-#fi
-
-#count=`ls ${VCF}/vcf_chr/*.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
-#count=`ls ${VCF}/vcf_chr/ens_WGS*.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
 count=`ls ${VCF_DIR}/${REF}-chr*.ann.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
 if [ $count != 41 ]; then
   echo "ERROR - Unable to find chromosome specific VCF files. Please check and try again - ${VCF}";
@@ -50,4 +43,7 @@ if [ $count != 41 ]; then
 fi
 
 dos2unix ${DISEASE_STATUS}
-echo sbatch --export=DISEASE_STATUS=${DISEASE_STATUS},FASTA=${FASTA},VCF_DIR=${VCF_DIR},SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/../slurm/vcf2excel.sh;
+jid1=$(sbatch --export=DISEASE_STATUS=${DISEASE_STATUS},FASTA=${FASTA},VCF_DIR=${VCF_DIR},SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/slurm/vcf2excel.sh);
+echo $jid1;
+
+sbatch --export=DISEASE_STATUS=${DISEASE_STATUS} --dependency=afterok:${jid1##* } ${SCRIPTS}/slurm/vcf2excel-finish.sh
