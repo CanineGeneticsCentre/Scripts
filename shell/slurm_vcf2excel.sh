@@ -35,7 +35,7 @@ VCF_DIR="/rds/project/rds-Qr3fy2NTCy0/Data/VCF/${GENOME}";
 
 DIR=`echo $RANDOM | md5sum | head -c 10`
 mkdir -p $DIR/logs; cd $DIR
-mv ../$DISEASE_STATUS .
+cp ../$DISEASE_STATUS .
 
 count=`ls ${VCF_DIR}/${REF}-chr*.ann.vcf.gz | wc -l`               # total number of VCF chr files available - should be 41!
 if [ $count != 41 ]; then
