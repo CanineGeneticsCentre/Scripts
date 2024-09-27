@@ -506,6 +506,7 @@ if ($default){
 	
 	
 	print "vcf2excel run with DEFAULT settings...\n";
+	$ref_seq_name = 'CanFam4';
 	#exit(0);
 	
 }
@@ -4451,6 +4452,9 @@ sub get_genotypes_from_all_samples
 		#   - allele_letter: This is the assigned alleles A,B,C,D etc    #
 		#   - allele_base:   This is the actual base (for SNPs)          #
 		##################################################################
+		print $GT_string."\t" if ($position eq $position_to_debug);
+		$GT_string =~ s/\|/\//g;
+		print $GT_string."\n" if ($position eq $position_to_debug);
         $slash_pos = index($GT_string, "/");
         
 		$allele_number_1 = "";
@@ -5988,12 +5992,14 @@ sub record_input_file_size
 
 sub pause
 {
-	print "\n Press RETURN to continue\n";
+	return if $default;
+	print "\n Press RETURN to continue (pause)\n";
 	$answer=<STDIN>;
 }
 
 sub pause_with_cancel
 {
+	return if $default;
 	if ($pause_cancelled eq "false")
 	{
 		print "\n Press RETURN to continue.\n\n";
