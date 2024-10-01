@@ -1,11 +1,12 @@
 #!/bin/bash
 
-## Command to Run :  bash slurm_vcf2excel.sh <Disease Status File> <CHR>
+## Command to Run :  bash slurm_vcf2excel.sh <Disease Status File> [<CHR>]
 
 
 SCRIPTS=`dirname $0`
 
 DISEASE_STATUS=$1
+CHR=$2
 [[ -z "$DISEASE_STATUS" ]] && { echo "ERROR: No disease status file provided for this run"; exit 1; }
 
 GENOME='canfam4';
@@ -22,7 +23,7 @@ if [[ -n $answer && $answer == "2" ]]; then
     REF='cf3';
 fi
 
-FASTA="/rds/project/rds-Qr3fy2NTCy0/Genomes/${GENOME}/current"
+FASTA="/rds/project/rds-9sJA7YGzZRc/Genomes/${GENOME}/current"
 VCF_DIR="/rds/project/rds-9sJA7YGzZRc/VCF/${GENOME}";
 
 DIR=`echo $RANDOM | md5sum | head -c 10`
@@ -35,8 +36,18 @@ if [ $count -lt 39 ]; then
   exit 1;
 fi
 
+if [ "$CHR" ]; then
+  if [[ ${#CHR} -lt 4 ]] ; then
+    CHR="chr"${CHR}
+  fi
+  LINE=$(grep -n "^${CHR}$" ${FASTA}/intervals/gdb-chromsomes.intervals | cut -f 1 -d":")
+  ARRAY="${LINE}-${LINE}"
+else
+  ARRAY="1-${count}"
+fi
+
 dos2unix ${DISEASE_STATUS}
-jid1=$(sbatch --array=1-${count} --export=DISEASE_STATUS=${DISEASE_STATUS},FASTA=${FASTA},VCF_DIR=${VCF_DIR},SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/../slurm/vcf2excel.sh);
+jid1=$(sbatch --array=${ARRAY} --export=DISEASE_STATUS=${DISEASE_STATUS},FASTA=${FASTA},VCF_DIR=${VCF_DIR},SCRIPTS=${SCRIPTS},REF=${REF} ${SCRIPTS}/../slurm/vcf2excel.sh);
 echo $jid1;
 
 sbatch --export=DISEASE_STATUS=${DISEASE_STATUS} --dependency=afterok:${jid1##* } ${SCRIPTS}/../slurm/vcf2excel-finish.sh
